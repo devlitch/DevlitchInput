@@ -1,0 +1,20 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.aps
+*.VC.db
+DevlitchInput/
+
+# Build
+x64/
+x86/
+Debug/
+Release/
+out/
+
+# Dumps
+*.dmp
+
+# Logs
+*.log
