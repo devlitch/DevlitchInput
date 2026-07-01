@@ -36,6 +36,7 @@ Steam Remote Play controllers are often:
 - Hot-plug support (plug & play)
 - Lightweight and low-latency design
 - Supports multiple controllers simultaneously
+- Rumble/Vibration forwarding
 
 ---
 
@@ -67,9 +68,9 @@ Steam Remote Play controllers are often:
 
 ## 🧠 Future Plans
 
-- Rumble/Vibration forwarding
+- UI overlay version
 - Improved controller identification
+- Virtual Playstation controller output
 - Advanced input mapping system
 - Per-game profiles
-- UI overlay version
 - Linux/macOS support
