@@ -8,7 +8,7 @@
 struct ControllerInfo
 {
     SDL_JoystickID id;
-    std::string name;
+    std::wstring name;
     bool connected = false;
 };
 

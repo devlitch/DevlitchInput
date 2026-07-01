@@ -1,58 +1,95 @@
 #include "ViGEmManager.h"
+#include <SDL3/SDL.h>
 #include <iostream>
 
 ViGEmManager bridge;
 
 bool ViGEmManager::Initialize() {
     client = vigem_alloc();
-    if (!client) return false;
-
-    if (!VIGEM_SUCCESS(vigem_connect(client))) return false;
+    if (client == nullptr){
+        std::cerr << "Uh, not enough memory to do that?!" << std::endl;
+        return false;
+    }
+    const auto retval = vigem_connect(client);
+    if (!VIGEM_SUCCESS(retval)) {
+        std::cerr << "ViGEm Bus connection failed with error code: 0x" << std::hex << retval << std::endl;
+        return false;
+    }
 
     std::cout << "ViGEm Ready\n";
     return true;
 }
 
-void ViGEmManager::EnsureController(SDL_JoystickID id) {
-    if (pads.find(id) != pads.end()) return;
+void ViGEmManager::EnsureController(SDL_JoystickID id, SDL_Gamepad* gamepad, bool rumble) {
+    if(pads.find(id) != pads.end()) return;
 
-    const char* path = SDL_GetJoystickPathForID(id);
-    if (!path)  return;
+    auto pad = std::make_unique<VirtualPad>();
+    pad->gamepad = gamepad;
+    pad->rumble = rumble;
+    pad->target = vigem_target_x360_alloc();
 
-    std::cout << "Device Path: " << path << std::endl;
+    VIGEM_ERROR err = vigem_target_add(client, pad->target);
 
-    PVIGEM_TARGET pad = vigem_target_x360_alloc();
-
-    VIGEM_ERROR err = vigem_target_add(client, pad);
-
-    if (!VIGEM_SUCCESS(err)) {
+    if(!VIGEM_SUCCESS(err)){
         std::cout << "Failed to create pad for: " << id
             << " error: " << err << std::endl;
 
-        vigem_target_free(pad);
+        vigem_target_free(pad->target);
         return;
     }
 
-    pads[id] = pad;
+    VirtualPad* virtualPad = pad.get();
+    pads.emplace(id, std::move(pad));
+
+    if(rumble) vigem_target_x360_register_notification(client,virtualPad->target,RumbleCallback,virtualPad);
 
     std::cout << "Created virtual pad for: " << id << std::endl;
 }
 
 void ViGEmManager::RemoveController(SDL_JoystickID id) {
     auto it=pads.find(id);
-    if (it == pads.end()) return;
+    if(it == pads.end()) return;
+    auto& pad = *it->second;
+    if(pad.rumble) vigem_target_x360_unregister_notification(pad.target);
 
-    vigem_target_remove(client, it->second);
-    vigem_target_free(it->second);
+    vigem_target_remove(client, pad.target);
+    vigem_target_free(pad.target);
 
     pads.erase(it);
 
     std::cout << "Virtual pad removed: " << id << std::endl;
 }
 
+_Function_class_(EVT_VIGEM_X360_NOTIFICATION)
+VOID CALLBACK ViGEmManager::RumbleCallback(
+    PVIGEM_CLIENT client,
+    PVIGEM_TARGET,
+    UCHAR largeMotor,
+    UCHAR smallMotor,
+    UCHAR,
+    LPVOID userData)
+{
+    auto* pad = static_cast<VirtualPad*>(userData);
+
+    if(!pad) return;
+    if(!pad->gamepad) return;
+    if(!SDL_GamepadConnected(pad->gamepad)) return;
+
+    pad->rumbleLow = static_cast<Uint16>(smallMotor * 257u);
+    pad->rumbleHigh = static_cast<Uint16>(largeMotor * 257u);
+
+    ApplyRumble(pad);
+}
+
+void ViGEmManager::ApplyRumble(VirtualPad* pad){
+    SDL_RumbleGamepad(pad->gamepad,pad->rumbleLow,pad->rumbleHigh,UINT32_MAX);
+    if(pad->rumbleLow==0 && pad->rumbleHigh==0)SDL_RumbleGamepad(pad->gamepad, 0, 0, 50);
+}
+
 void ViGEmManager::Update(SDL_JoystickID id, const InputState& s) {
     auto it=pads.find(id);
     if(it == pads.end()) return;
+    VirtualPad* pad = it->second.get();
 
     XUSB_REPORT report{};
     ZeroMemory(&report, sizeof(report));
@@ -85,18 +122,19 @@ void ViGEmManager::Update(SDL_JoystickID id, const InputState& s) {
     if (s.dpadLeft) report.wButtons |= XUSB_GAMEPAD_DPAD_LEFT;
     if (s.dpadRight) report.wButtons |= XUSB_GAMEPAD_DPAD_RIGHT;
 
-    vigem_target_x360_update(client, it->second, report);
+    vigem_target_x360_update(client, pad->target, report);
 }
 
 void ViGEmManager::Shutdown() {
     for (auto& [index, pad] : pads) {
-        vigem_target_remove(client, pad);
-        vigem_target_free(pad);
+        if(pad->rumble) vigem_target_x360_unregister_notification(pad->target);
+        vigem_target_remove(client, pad->target);
+        vigem_target_free(pad->target);
     }
 
     pads.clear();
 
-    if (client) {
+    if(client){
         vigem_disconnect(client);
         vigem_free(client);
         client = nullptr;

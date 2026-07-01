@@ -29,6 +29,8 @@ int main() {
     std::cout << "Running...\n";
 
     while (g_Running) {
+        SDL_PumpEvents();
+        SDL_UpdateJoysticks();
         gamepadManager.Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }

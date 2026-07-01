@@ -10,11 +10,19 @@ extern ControllerManager controllerManager;
 extern ViGEmManager bridge;
 
 bool GamepadManager::Initialize() {
-    if (SDL_Init(SDL_INIT_GAMEPAD) < 0) {
+    SDL_SetHint("SDL_HINT_ENABLE_STEAM_SCREEN_KEYBOARD", "0");
+    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+    if (!SDL_Init(SDL_INIT_GAMEPAD|SDL_INIT_HAPTIC)) {
         std::cout << "SDL init failed\n";
         return false;
     }
+    SDL_Environment* env = SDL_GetEnvironment();
 
+    if (!SDL_GetEnvironmentVariable(env, "SteamClientLaunch")) {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,"Steam Required","Please launch it from your Steam Library.", NULL);
+        g_Running = false;
+        return 1;
+    }
     std::cout << "SDL Initialized\n";
     return true;
 }
@@ -29,11 +37,14 @@ void GamepadManager::addController(SDL_JoystickID id) {
         return;
     }
 
+    bool rumble = SDL_GetBooleanProperty(SDL_GetGamepadProperties(pad), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, false);
+
     Controller c;
     c.pad = pad;
     c.id = id;
+    c.rumble = rumble;
     controllers.push_back(c);
-    bridge.EnsureController(id);
+    bridge.EnsureController(id,pad,rumble);
 }
 
 void GamepadManager::removeController(SDL_JoystickID id) {
@@ -67,26 +78,27 @@ void GamepadManager::Update() {
     SDL_Event e;
 
     while (SDL_PollEvent(&e)) {
-
-        // Exit         #CTRL + C
-        if (e.type == 256) {
+        switch (e.type) {
+        case SDL_EVENT_QUIT:
+        {
             std::cout << "Exiting...\n";
             g_Running = false;
             return;
         }
-
-        // CONNECT
-        if (e.type == SDL_EVENT_JOYSTICK_ADDED) {
+        case SDL_EVENT_JOYSTICK_ADDED:
+        {
             controllerManager.Refresh();
+            break;
         }
-
-        // DISCONNECT
-        if (e.type == SDL_EVENT_JOYSTICK_REMOVED) {
-            SDL_JoystickID id = e.gdevice.which;
-
+        case SDL_EVENT_JOYSTICK_REMOVED:
+        {
+            SDL_JoystickID id = e.jdevice.which;
             removeController(id);
-            
             controllerManager.Refresh();
+            break;
+        }
+        default:
+            break;
         }
     }
 
@@ -94,15 +106,11 @@ void GamepadManager::Update() {
         if (!c.pad) continue;
 
         c.state.leftX = normalize(SDL_GetGamepadAxis(c.pad, SDL_GAMEPAD_AXIS_LEFTX));
-
         c.state.leftY = normalize(SDL_GetGamepadAxis(c.pad, SDL_GAMEPAD_AXIS_LEFTY));
-
         c.state.rightX = normalize(SDL_GetGamepadAxis(c.pad, SDL_GAMEPAD_AXIS_RIGHTX));
-
         c.state.rightY = normalize(SDL_GetGamepadAxis(c.pad, SDL_GAMEPAD_AXIS_RIGHTY));
 
         c.state.leftTrigger = normalize(SDL_GetGamepadAxis(c.pad, SDL_GAMEPAD_AXIS_LEFT_TRIGGER));
-
         c.state.rightTrigger = normalize(SDL_GetGamepadAxis(c.pad, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER));
 
         c.state.a = SDL_GetGamepadButton(c.pad, SDL_GAMEPAD_BUTTON_SOUTH);
@@ -123,6 +131,7 @@ void GamepadManager::Update() {
         c.state.dpadDown = SDL_GetGamepadButton(c.pad, SDL_GAMEPAD_BUTTON_DPAD_DOWN);
         c.state.dpadLeft = SDL_GetGamepadButton(c.pad, SDL_GAMEPAD_BUTTON_DPAD_LEFT);
         c.state.dpadRight = SDL_GetGamepadButton(c.pad, SDL_GAMEPAD_BUTTON_DPAD_RIGHT);
+
         bridge.Update(c.id, c.state);
     }
 }

@@ -10,6 +10,7 @@ struct Controller
 {
     SDL_Gamepad* pad = nullptr;
     SDL_JoystickID id;
+    bool rumble;
 
     InputState state;
 };

@@ -77,10 +77,14 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\include;E:\Working\Devlitch\Includes\vigemclient\include\x86</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\lib\x86;E:\Working\Devlitch\Includes\vigemclient\debug\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;ViGEmClient.lib;setupapi.lib</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -95,10 +99,14 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\include;E:\Working\Devlitch\Includes\vigemclient\include\x86</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\lib\x86;E:\Working\Devlitch\Includes\vigemclient\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;ViGEmClient.lib;setupapi.lib</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -111,13 +119,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\include;E:\Working\Devlitch\Includes\x64-windows-static\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\include;E:\Working\Devlitch\Includes\vigemclient\include\x64</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\lib\x64;E:\Working\Devlitch\Includes\x64-windows-static\debug\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\lib\x64;E:\Working\Devlitch\Includes\vigemclient\debug\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;ViGEmClient.lib;setupapi.lib</AdditionalDependencies>
     </Link>
     <Manifest>
@@ -133,13 +141,13 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\include;E:\Working\Devlitch\Includes\x64-windows-static\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\include;E:\Working\Devlitch\Includes\vigemclient\include\x64</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\lib\x64;E:\Working\Devlitch\Includes\x64-windows-static\lib</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\lib\x64;E:\Working\Devlitch\Includes\vigemclient\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;ViGEmClient.lib;setupapi.lib</AdditionalDependencies>
     </Link>
     <Manifest>
