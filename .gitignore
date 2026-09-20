@@ -5,6 +5,7 @@
 *.aps
 *.VC.db
 DevlitchInput/
+DevlitchInput_sp/
 
 # Build
 x64/
@@ -15,6 +16,12 @@ out/
 
 # Dumps
 *.dmp
+*.json
 
 # Logs
 *.log
+
+# Temp
+*.TMP
+
+bkup/

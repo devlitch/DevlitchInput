@@ -3,19 +3,17 @@
 #include <vector>
 #include <string>
 #include <SDL3/SDL.h>
-#include "../Gamepad/GamepadManager.h"
 
-struct ControllerInfo
-{
+struct ControllerInfo {
     SDL_JoystickID id;
-    std::wstring name;
+    std::string name;
     bool connected = false;
 };
 
-class ControllerManager
-{
+class ControllerManager {
 public:
-    void toggleControllerState(SDL_JoystickID id);
+    bool setControllerState(SDL_JoystickID id, bool type);
+    bool Rumble(SDL_JoystickID id, Uint16 smallMotor, Uint16 largeMotor, Uint32 duration);
     void Refresh();
 
     const std::vector<ControllerInfo>& GetControllers() const;
@@ -24,3 +22,5 @@ private:
     std::vector<ControllerInfo> controllersInfo;
     ControllerInfo* find(SDL_JoystickID id);
 };
+
+inline ControllerManager controllerManager;

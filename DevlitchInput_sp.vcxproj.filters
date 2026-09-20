@@ -16,31 +16,25 @@
     <Filter Include="Source Files\Bridge">
       <UniqueIdentifier>{2a01b730-cdfd-46eb-b824-d2c3b8021892}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Tray">
-      <UniqueIdentifier>{577b91e5-bc76-4060-9ba0-771ce6b6d077}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Global">
-      <UniqueIdentifier>{0e813741-9b2c-4dc3-9913-e2ed672a9552}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Gamepad">
       <UniqueIdentifier>{398e8b9d-51df-48db-be72-06b73bbca35b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{64cd27eb-cfe1-4190-b648-e93c0082e9d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\IPC">
+      <UniqueIdentifier>{16a0e3c2-44af-478c-8e04-c5bbbc523e40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IPC\Shared">
+      <UniqueIdentifier>{911fdd38-f00c-43fe-9bfc-5fe7e1ad11bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Tray\Tray.cpp">
-      <Filter>Source Files\Tray</Filter>
-    </ClCompile>
     <ClCompile Include="src\Input\ControllerManager.cpp">
       <Filter>Source Files\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Global\Global.cpp">
-      <Filter>Source Files\Global</Filter>
     </ClCompile>
     <ClCompile Include="src\Gamepad\GamepadManager.cpp">
       <Filter>Source Files\Gamepad</Filter>
@@ -48,16 +42,16 @@
     <ClCompile Include="src\Bridge\ViGEmManager.cpp">
       <Filter>Source Files\Bridge</Filter>
     </ClCompile>
+    <ClCompile Include="src\IPC\TCPConfig.cpp">
+      <Filter>Source Files\IPC</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IPC\TCPServer.cpp">
+      <Filter>Source Files\IPC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Tray\Tray.h">
-      <Filter>Source Files\Tray</Filter>
-    </ClInclude>
     <ClInclude Include="src\Input\ControllerManager.h">
       <Filter>Source Files\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Global\Global.h">
-      <Filter>Source Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="src\Gamepad\GamepadManager.h">
       <Filter>Source Files\Gamepad</Filter>
@@ -71,9 +65,18 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\IPC\TCPConfig.h">
+      <Filter>Source Files\IPC</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPC\TCPServer.h">
+      <Filter>Source Files\IPC</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPC\Shared\Protocol.h">
+      <Filter>Source Files\IPC\Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="DevlitchInput.rc">
+    <ResourceCompile Include="DevlitchInput_sp.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

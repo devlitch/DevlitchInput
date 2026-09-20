@@ -1,9 +1,7 @@
 #include "ControllerManager.h"
-#include "../Tray/Tray.h"
-#include <stdexcept>
 
-ControllerManager controllerManager;
-extern GamepadManager gamepadManager;
+#include "../Bridge/ViGEmManager.h"
+#include "../Gamepad/GamepadManager.h"
 
 ControllerInfo* ControllerManager::find(SDL_JoystickID id) {
     for (auto& c : controllersInfo) {
@@ -12,42 +10,18 @@ ControllerInfo* ControllerManager::find(SDL_JoystickID id) {
     return nullptr;
 }
 
-void ControllerManager::toggleControllerState(SDL_JoystickID id) {
+bool ControllerManager::setControllerState(SDL_JoystickID id, bool type) {
     ControllerInfo* c = find(id);
-    if (!c) return;
+    if (!c) return false;
 
-    c->connected = !c->connected;
-    if (c->connected) {
-        gamepadManager.addController(c->id);
-    } else {
-        gamepadManager.removeController(c->id);
-    }
+    c->connected = type;
+    return type ? gamepadManager.addController(c->id) : gamepadManager.removeController(c->id);
 }
-std::wstring wstring(const char* s) {
-    if (!s) return {};
 
-    int n = MultiByteToWideChar(
-        CP_UTF8,
-        MB_ERR_INVALID_CHARS,
-        s, -1,
-        nullptr, 0
-    );
-
-    if (n <= 0) throw std::runtime_error("Invalid UTF-8");
-
-    std::wstring w(n, L'\0');
-
-    MultiByteToWideChar(
-        CP_UTF8,
-        MB_ERR_INVALID_CHARS,
-        s, -1,
-        w.data(),
-        n
-    );
-
-    w.pop_back();
-    return w;
+bool ControllerManager::Rumble(SDL_JoystickID id, Uint16 smallMotor, Uint16 largeMotor, Uint32 duration) {
+    return gamepadManager.TestRumble(id, smallMotor, largeMotor, duration);
 }
+
 void ControllerManager::Refresh() {
     controllersInfo.clear();
 
@@ -56,19 +30,23 @@ void ControllerManager::Refresh() {
 
     for (int i = 0; i < count; i++) {
         SDL_JoystickID id = ids[i];
+
+        Uint16 vid = SDL_GetJoystickVendorForID(id);
+        Uint16 pid = SDL_GetJoystickProductForID(id);
         const char* path = SDL_GetJoystickPathForID(id);
         if (path && std::strncmp(path, "XInput", 6) != 0) continue;
         Controller* cGamepad = gamepadManager.find(id);
 
         ControllerInfo c;
         c.id = id;
-        c.name = wstring(SDL_GetJoystickNameForID(id)) + L" ( #" + std::to_wstring(id) + L" )";
-        c.connected = cGamepad?true:false;
+        c.name = std::string(SDL_GetJoystickNameForID(id)) + " ( #" + std::to_string(id) + " )";
+        c.connected = cGamepad ? true : false;
 
-        if (c.name == L"") c.name = L"Unknown";
+        if (bridge.isOurDevice(vid, pid)) continue;
+
+        if (c.name == "") c.name = "Unknown";
 
         controllersInfo.push_back(c);
-        menuDirty = true;
     }
 
     SDL_free(ids);

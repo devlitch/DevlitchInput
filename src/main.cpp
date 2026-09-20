@@ -1,41 +1,48 @@
-#include <iostream>
 #include <thread>
 
+#include "IPC/TCPServer.h"
 #include "Gamepad/GamepadManager.h"
 #include "Bridge/ViGEmManager.h"
-#include "Tray/Tray.h"
-#include "Global/Global.h"
 
-extern ViGEmManager bridge;
-extern GamepadManager gamepadManager;
+std::thread serverThread;
 
+void Stop() {
+    bridge.Shutdown();
+    server.func.Stop();
+    if (serverThread.joinable()) serverThread.join();
+    SDL_Quit();
+}
 int main() {
+    serverThread = std::thread(&TcpServer::init, &server);
+
     if (!bridge.Initialize()) {
-        std::cout << "ViGEm init failed\n";
+        IPC::ErrorPayload response{};
+
+        response.type = IPC::ErrorType::ViGEmInit;
+        server.func.Send(IPC::PacketType::Error, response);
+        Stop();
         return -1;
     }
 
     if (!gamepadManager.Initialize()) {
-        std::cout << "SDL failed\n";
+        IPC::ErrorPayload response{};
+
+        response.type = IPC::ErrorType::SDLInit;
+
+        server.func.Send(IPC::PacketType::Error, response);
+        Stop();
         return -1;
     }
 
-
-    std::thread([] {
-        Tray tray(GetModuleHandleW(nullptr));
-        tray.Run();
-    }).detach();
-
-    std::cout << "Running...\n";
-
-    while (g_Running) {
-        SDL_PumpEvents();
-        SDL_UpdateJoysticks();
-        gamepadManager.Update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    {
+        IPC::SuccessPayload response{};
+        response.type = IPC::SuccessType::StartUI;
+        server.func.Send(IPC::PacketType::Success, response);
     }
 
-    bridge.Shutdown();
+    gamepadManager.Start();
+
+    Stop();
 
     return 0;
 }

@@ -70,6 +70,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>sp</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>sp</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>sp</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>sp</TargetName>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -77,13 +89,13 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\include;E:\Working\Devlitch\Includes\vigemclient\include\x86</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\include;E:\Working\Devlitch\Includes\asio-1.38.2\include;E:\Working\Devlitch\Includes\vigemclient\include\x86</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\lib\x86;E:\Working\Devlitch\Includes\vigemclient\debug\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\lib\x86;E:\Working\Devlitch\Includes\vigemclient\debug\lib\x86</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;ViGEmClient.lib;setupapi.lib</AdditionalDependencies>
     </Link>
     <Manifest>
@@ -96,17 +108,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\include;E:\Working\Devlitch\Includes\vigemclient\include\x86</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\include;E:\Working\Devlitch\Includes\asio-1.38.2\include;E:\Working\Devlitch\Includes\vigemclient\include\x86</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\lib\x86;E:\Working\Devlitch\Includes\vigemclient\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\lib\x86;E:\Working\Devlitch\Includes\vigemclient\lib\x86</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;ViGEmClient.lib;setupapi.lib</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -119,13 +133,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\include;E:\Working\Devlitch\Includes\vigemclient\include\x64</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\include;E:\Working\Devlitch\Includes\asio-1.38.2\include;E:\Working\Devlitch\Includes\vigemclient\include\x64</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\lib\x64;E:\Working\Devlitch\Includes\vigemclient\debug\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\lib\x64;E:\Working\Devlitch\Includes\vigemclient\debug\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;ViGEmClient.lib;setupapi.lib</AdditionalDependencies>
     </Link>
     <Manifest>
@@ -138,17 +152,18 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\include;E:\Working\Devlitch\Includes\vigemclient\include\x64</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\include;E:\Working\Devlitch\Includes\asio-1.38.2\include;E:\Working\Devlitch\Includes\vigemclient\include\x64</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.10\lib\x64;E:\Working\Devlitch\Includes\vigemclient\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\lib\x64;E:\Working\Devlitch\Includes\vigemclient\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;ViGEmClient.lib;setupapi.lib</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -157,22 +172,23 @@
   <ItemGroup>
     <ClCompile Include="src\Bridge\ViGEmManager.cpp" />
     <ClCompile Include="src\Gamepad\GamepadManager.cpp" />
-    <ClCompile Include="src\Global\Global.cpp" />
     <ClCompile Include="src\Input\ControllerManager.cpp" />
+    <ClCompile Include="src\IPC\TCPConfig.cpp" />
+    <ClCompile Include="src\IPC\TCPServer.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Tray\Tray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\Bridge\ViGEmManager.h" />
     <ClInclude Include="src\Gamepad\GamepadManager.h" />
-    <ClInclude Include="src\Global\Global.h" />
     <ClInclude Include="src\InputState.h" />
     <ClInclude Include="src\Input\ControllerManager.h" />
-    <ClInclude Include="src\Tray\Tray.h" />
+    <ClInclude Include="src\IPC\TCPConfig.h" />
+    <ClInclude Include="src\IPC\TCPServer.h" />
+    <ClInclude Include="src\IPC\Shared\Protocol.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="DevlitchInput.rc" />
+    <ResourceCompile Include="DevlitchInput_sp.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\icon.ico" />

@@ -1,5 +1,10 @@
 #pragma once
 
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #include <Windows.h>
 #include <ViGEm/Client.h>
 #include <vector>
@@ -24,8 +29,9 @@ public:
     bool Initialize();
     void Shutdown();
 
-    void EnsureController(SDL_JoystickID id, SDL_Gamepad* gamepad, bool rumble);
+    bool EnsureController(SDL_JoystickID id, SDL_Gamepad* gamepad, bool rumble);
     void RemoveController(SDL_JoystickID id);
+    bool isOurDevice(USHORT vid, USHORT pid) const;
 
     void Update(SDL_JoystickID id, const InputState& state);
 
@@ -44,4 +50,9 @@ private:
     static void ApplyRumble(VirtualPad* pad);
 
     std::unordered_map<SDL_JoystickID, std::unique_ptr<VirtualPad>> pads;
+
+    static constexpr USHORT MY_VID = 0xDF69;
+    static constexpr USHORT MY_PID = 0x69FA;
 };
+
+inline ViGEmManager bridge;

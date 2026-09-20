@@ -1,40 +1,50 @@
 #include "GamepadManager.h"
+
+#include "../IPC/TCPServer.h"
+#include "../Input/ControllerManager.h"
 #include "../Bridge/ViGEmManager.h"
-#include "../Global/Global.h"
-#include <iostream>
-#include <algorithm>
 
-GamepadManager gamepadManager;
-
-extern ControllerManager controllerManager;
-extern ViGEmManager bridge;
+#include <format>
 
 bool GamepadManager::Initialize() {
     SDL_SetHint("SDL_HINT_ENABLE_STEAM_SCREEN_KEYBOARD", "0");
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
-    if (!SDL_Init(SDL_INIT_GAMEPAD|SDL_INIT_HAPTIC)) {
-        std::cout << "SDL init failed\n";
+    if (!SDL_Init(SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC)) {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "DevlitchInput - SDL", "SDL init failed", NULL);
         return false;
     }
     SDL_Environment* env = SDL_GetEnvironment();
 
-    if (!SDL_GetEnvironmentVariable(env, "SteamClientLaunch")) {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,"Steam Required","Please launch it from your Steam Library.", NULL);
-        g_Running = false;
-        return 1;
-    }
-    std::cout << "SDL Initialized\n";
+    if (!SDL_GetEnvironmentVariable(env, "SteamClientLaunch")) return 0;
+    controllerManager.Refresh();
     return true;
 }
 
-void GamepadManager::addController(SDL_JoystickID id) {
+void GamepadManager::Start() {
+    while (server.IsRunning()) {
+        SDL_PumpEvents();
+        SDL_UpdateJoysticks();
+
+        SDL_Event e;
+
+        while (SDL_PollEvent(&e)) {
+            gamepadManager.ProcessEvent(e);
+        }
+
+        gamepadManager.Update();
+
+        SDL_Delay(5);
+    }
+}
+
+bool GamepadManager::addController(SDL_JoystickID id) {
     Controller* cId = find(id);
-    if (cId) return;
+    if (cId) return false;
 
     SDL_Gamepad* pad = SDL_OpenGamepad(id);
     if (!pad) {
-        printf("OpenGamepad(%u) failed: %s\n", id, SDL_GetError());
-        return;
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "DevlitchInput - SDL", std::format("OpenGamepad({}) failed: {}", id, SDL_GetError()).c_str(), nullptr);
+        return false;
     }
 
     bool rumble = SDL_GetBooleanProperty(SDL_GetGamepadProperties(pad), SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, false);
@@ -43,65 +53,96 @@ void GamepadManager::addController(SDL_JoystickID id) {
     c.pad = pad;
     c.id = id;
     c.rumble = rumble;
+    if (!bridge.EnsureController(id, pad, rumble)) return false;
     controllers.push_back(c);
-    bridge.EnsureController(id,pad,rumble);
+    TestRumble(id, 2500, 2500, 50);
+    SDL_Delay(50);
+    TestRumble(id, 2500, 2500, 50);
+    return true;
 }
 
-void GamepadManager::removeController(SDL_JoystickID id) {
+bool GamepadManager::removeController(SDL_JoystickID id) {
     Controller* cId = find(id);
-    if (!cId) return;
-
+    if (!cId) return false;
+    TestRumble(id, 2500, 2500, 50);
+    SDL_Delay(5);
     bridge.RemoveController(id);
+
+    if (cId->pad) {
+        SDL_CloseGamepad(cId->pad);
+        cId->pad = nullptr;
+    }
 
     controllers.erase(
         std::remove_if(controllers.begin(), controllers.end(), [&](Controller& c) {
-                return c.id == id;
+            return c.id == id;
         }), controllers.end()
     );
 
-    std::cout << "Controller removed: " << id << std::endl;
+    return true;
 }
 
 Controller* GamepadManager::find(SDL_JoystickID id) {
     for (auto& c : controllers) {
-        if (c.id == id)
-            return &c;
+        if (c.id == id) return &c;
     }
     return nullptr;
 }
+
+bool GamepadManager::TestRumble(SDL_JoystickID id, Uint16 smallMotor, Uint16 largeMotor, Uint32 duration) {
+    Controller* controller = find(id);
+    if (!controller) {
+        SDL_Joystick* joystick = SDL_OpenJoystick(id);
+        if (!joystick) return false;
+
+        bool result = SDL_RumbleJoystick(joystick, smallMotor, largeMotor, duration);
+        if (result) {
+            std::thread([joystick, duration]() {
+                SDL_Delay(duration);
+                SDL_CloseJoystick(joystick);
+            }).detach();
+        } else {
+            SDL_CloseJoystick(joystick);
+        }
+        return result;
+    }
+
+    if (!controller->pad) return false;
+    if (!controller->rumble) return false;
+
+    return SDL_RumbleGamepad(controller->pad, smallMotor, largeMotor, duration);
+}
+
 
 float GamepadManager::normalize(int value) {
     return value / 32767.0f;
 }
 
-void GamepadManager::Update() {
-    SDL_Event e;
-
-    while (SDL_PollEvent(&e)) {
-        switch (e.type) {
-        case SDL_EVENT_QUIT:
-        {
-            std::cout << "Exiting...\n";
-            g_Running = false;
-            return;
-        }
-        case SDL_EVENT_JOYSTICK_ADDED:
-        {
-            controllerManager.Refresh();
-            break;
-        }
-        case SDL_EVENT_JOYSTICK_REMOVED:
-        {
-            SDL_JoystickID id = e.jdevice.which;
-            removeController(id);
-            controllerManager.Refresh();
-            break;
-        }
-        default:
-            break;
-        }
+void GamepadManager::ProcessEvent(const SDL_Event& e) {
+    switch (e.type) {
+    case SDL_EVENT_QUIT:
+    {
+        server.func.Stop();
+        return;
     }
+    case SDL_EVENT_JOYSTICK_ADDED:
+    {
+        server.RefreshControllerList();
+        break;
+    }
+    case SDL_EVENT_JOYSTICK_REMOVED:
+    {
+        SDL_JoystickID id = e.jdevice.which;
+        removeController(id);
+        server.RefreshControllerList();
+        break;
+    }
+    default:
+        break;
+    }
+}
 
+void GamepadManager::Update() {
     for (auto& c : controllers) {
         if (!c.pad) continue;
 
