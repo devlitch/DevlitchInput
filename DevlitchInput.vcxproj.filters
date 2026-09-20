@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GUI">
+      <UniqueIdentifier>{909842fc-4663-4db4-8c72-e53013465698}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\External">
+      <UniqueIdentifier>{276cf166-2d01-4558-9ed5-144c06c8ebfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\External\imgui">
+      <UniqueIdentifier>{ce77e1fc-096a-4328-87ce-6a750928b17d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\External\imgui\Backends">
+      <UniqueIdentifier>{a29f4dab-910a-4004-a13c-094999170509}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI\Renderer">
+      <UniqueIdentifier>{f9cdadac-bbd5-4851-9b0d-e40db68af6af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{cc5228c8-1009-41f9-88cf-591d686b8e1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam">
+      <UniqueIdentifier>{f0dd33be-14e5-49ae-b1b9-f2873e318e62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\VDF">
+      <UniqueIdentifier>{c05e13ce-0d4b-44c3-ad1e-402aa4c0aede}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\VDF\Reader">
+      <UniqueIdentifier>{936b2e36-6c1b-4ec6-ba12-295261506876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\VDF\Reader\func">
+      <UniqueIdentifier>{c3f991c3-b850-4c54-b7e1-8f8b0f90edaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\VDF\Writer">
+      <UniqueIdentifier>{1a35f571-68af-4e29-8262-7133f1061d90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\VDF\Writer\func">
+      <UniqueIdentifier>{6c6c366f-af46-4081-b661-0bbaf4c89f24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\Config">
+      <UniqueIdentifier>{fb9d4949-1c00-4cb5-9a99-3cd0f0c3dc74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\Login">
+      <UniqueIdentifier>{7595f3ed-7055-4800-adb6-e8b8ee1c19ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\Login\Selector">
+      <UniqueIdentifier>{7563a30c-6f4b-4b49-94a6-228200cbd224}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\Login\LoginVDF">
+      <UniqueIdentifier>{ae0c5fdf-ab82-4ad3-92cf-1fdceb86cd14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DevlitchInput">
+      <UniqueIdentifier>{938a6ccf-7793-401e-a239-157c4ce29102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IPC">
+      <UniqueIdentifier>{65fbb9fb-835d-49bb-913d-8aac9f567be8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IPC\Shared">
+      <UniqueIdentifier>{edbffae1-6e00-4b3f-a489-cde1b7d5ae4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI\Loading">
+      <UniqueIdentifier>{ea72ae70-0a91-486a-b11d-efcb24809cb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI\Notification">
+      <UniqueIdentifier>{675ce4c4-820b-4083-9da2-7a43951b7479}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI\UI">
+      <UniqueIdentifier>{32b6199a-f80b-4884-b6cc-4ae5aa255bb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI\Tabs">
+      <UniqueIdentifier>{9d45a4d2-cb70-4571-955e-d44a94f62b7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI\Tabs\ControllersTab">
+      <UniqueIdentifier>{1d9a6fb0-0227-4277-8439-ead65dd28534}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\VDF\func">
+      <UniqueIdentifier>{b6a86e04-2572-4019-9850-d8d2ffc24db1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\VDF\func\SteamInput">
+      <UniqueIdentifier>{bfb78d31-d462-4822-9a8b-e98d1bf078cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Steam\Select">
+      <UniqueIdentifier>{da92eba9-0bab-4210-9454-480e39e33afd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI\GUI.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\imgui.cpp">
+      <Filter>Source Files\External\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\imgui_draw.cpp">
+      <Filter>Source Files\External\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\imgui_tables.cpp">
+      <Filter>Source Files\External\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\External\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\backends\imgui_impl_sdl3.cpp">
+      <Filter>Source Files\External\imgui\Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\backends\imgui_impl_sdlgpu3.cpp">
+      <Filter>Source Files\External\imgui\Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Steam\Config\Config.cpp">
+      <Filter>Source Files\Steam\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Steam\Login\Selector.cpp">
+      <Filter>Source Files\Steam\Login\Selector</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Steam\Login\LoginVDF.cpp">
+      <Filter>Source Files\Steam\Login\LoginVDF</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI\Renderer.cpp">
+      <Filter>Source Files\GUI\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI\Renderer\Texture.cpp">
+      <Filter>Source Files\GUI\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Steam\VDF\func\writerFunc.cpp">
+      <Filter>Source Files\Steam\VDF\Writer\func</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Steam\VDF\func\readerFunc.cpp">
+      <Filter>Source Files\Steam\VDF\Reader\func</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Steam\VDF\Writer.cpp">
+      <Filter>Source Files\Steam\VDF\Writer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Steam\VDF\Reader.cpp">
+      <Filter>Source Files\Steam\VDF\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Steam\VDF\checker.cpp">
+      <Filter>Source Files\Steam\VDF</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IPC\TCPClient.cpp">
+      <Filter>Source Files\IPC</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IPC\TCPConfig.cpp">
+      <Filter>Source Files\IPC</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\Utils.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DI\nput.cpp">
+      <Filter>Source Files\DevlitchInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI\Loading.cpp">
+      <Filter>Source Files\GUI\Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI\Notification.cpp">
+      <Filter>Source Files\GUI\Notification</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI\UI.cpp">
+      <Filter>Source Files\GUI\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI\Tabs\ControllerHub.cpp">
+      <Filter>Source Files\GUI\Tabs\ControllersTab</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI\Tabs.cpp">
+      <Filter>Source Files\GUI\Tabs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Steam\VDF\func\SteamInput.cpp">
+      <Filter>Source Files\Steam\VDF\func\SteamInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Steam\Select\Folder.cpp">
+      <Filter>Source Files\Steam\Select</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI\GUI.h">
+      <Filter>Source Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\Config\Config.h">
+      <Filter>Source Files\Steam\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\Login\SteamUser.h">
+      <Filter>Source Files\Steam\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\Login\Selector.h">
+      <Filter>Source Files\Steam\Login\Selector</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\Login\LoginVDF.h">
+      <Filter>Source Files\Steam\Login\LoginVDF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI\Renderer.h">
+      <Filter>Source Files\GUI\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI\Renderer\Texture.h">
+      <Filter>Source Files\GUI\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\VDF\func\writerFunc.h">
+      <Filter>Source Files\Steam\VDF\Writer\func</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\VDF\func\readerFunc.h">
+      <Filter>Source Files\Steam\VDF\Reader\func</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\VDF\Writer.h">
+      <Filter>Source Files\Steam\VDF\Writer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\VDF\Reader.h">
+      <Filter>Source Files\Steam\VDF\Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\VDF\Shortcut.h">
+      <Filter>Source Files\Steam\VDF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\VDF\checker.h">
+      <Filter>Source Files\Steam\VDF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPC\TCPClient.h">
+      <Filter>Source Files\IPC</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPC\Shared\Protocol.h">
+      <Filter>Source Files\IPC\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPC\TCPConfig.h">
+      <Filter>Source Files\IPC</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\Utils.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DI\nput.h">
+      <Filter>Source Files\DevlitchInput</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI\Loading.h">
+      <Filter>Source Files\GUI\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI\Notification.h">
+      <Filter>Source Files\GUI\Notification</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI\UI.h">
+      <Filter>Source Files\GUI\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI\Tabs\ControllerHub.h">
+      <Filter>Source Files\GUI\Tabs\ControllersTab</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI\Tabs.h">
+      <Filter>Source Files\GUI\Tabs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\VDF\func\SteamInput.h">
+      <Filter>Source Files\Steam\VDF\func\SteamInput</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Steam\Select\Folder.h">
+      <Filter>Source Files\Steam\Select</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DevlitchInput.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

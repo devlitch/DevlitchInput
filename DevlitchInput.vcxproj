@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{991fc001-d157-4562-9c61-5f2c116f0798}</ProjectGuid>
+    <RootNamespace>DevlitchInput</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\include;E:\Working\Devlitch\Includes\SDL3_image-3.4.4\include;E:\Working\Devlitch\Includes\nlohmann;E:\Working\Devlitch\Includes\asio-1.38.2\include;$(ProjectDir)external\imgui;$(ProjectDir)external\imgui\backends;$(ProjectDir)external\ValveFileVDF</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\lib\x86;E:\Working\Devlitch\Includes\SDL3_image-3.4.4\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;SDL3_image.lib;setupapi.lib</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\include;E:\Working\Devlitch\Includes\SDL3_image-3.4.4\include;E:\Working\Devlitch\Includes\asio-1.38.2\include;E:\Working\Devlitch\Includes\nlohmann;E:\Working\Devlitch\Includes\ValveFileVDF;$(ProjectDir)external\imgui;$(ProjectDir)external\imgui\backends</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <Optimization>MaxSpeed</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\lib\x86;E:\Working\Devlitch\Includes\SDL3_image-3.4.4\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;SDL3_image.lib;setupapi.lib</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\include;E:\Working\Devlitch\Includes\SDL3_image-3.4.4\include;E:\Working\Devlitch\Includes\asio-1.38.2\include;E:\Working\Devlitch\Includes\nlohmann;E:\Working\Devlitch\Includes\ValveFileVDF;$(ProjectDir)external\imgui;$(ProjectDir)external\imgui\backends</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\lib\x64;E:\Working\Devlitch\Includes\SDL3_image-3.4.4\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;SDL3_image.lib;setupapi.lib</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\include;E:\Working\Devlitch\Includes\SDL3_image-3.4.4\include;E:\Working\Devlitch\Includes\asio-1.38.2\include;E:\Working\Devlitch\Includes\nlohmann;E:\Working\Devlitch\Includes\ValveFileVDF;$(ProjectDir)external\imgui;$(ProjectDir)external\imgui\backends</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\Working\Devlitch\Includes\SDL3-3.4.16\lib\x64;E:\Working\Devlitch\Includes\SDL3_image-3.4.4\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib;SDL3_image.lib;setupapi.lib</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="external\imgui\backends\imgui_impl_sdl3.cpp" />
+    <ClCompile Include="external\imgui\backends\imgui_impl_sdlgpu3.cpp" />
+    <ClCompile Include="external\imgui\imgui.cpp" />
+    <ClCompile Include="external\imgui\imgui_draw.cpp" />
+    <ClCompile Include="external\imgui\imgui_tables.cpp" />
+    <ClCompile Include="external\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\DI\nput.cpp" />
+    <ClCompile Include="src\GUI\GUI.cpp" />
+    <ClCompile Include="src\GUI\Loading.cpp" />
+    <ClCompile Include="src\GUI\Notification.cpp" />
+    <ClCompile Include="src\GUI\Renderer.cpp" />
+    <ClCompile Include="src\GUI\Renderer\Texture.cpp" />
+    <ClCompile Include="src\GUI\Tabs.cpp" />
+    <ClCompile Include="src\GUI\Tabs\ControllerHub.cpp" />
+    <ClCompile Include="src\GUI\UI.cpp" />
+    <ClCompile Include="src\IPC\TCPConfig.cpp" />
+    <ClCompile Include="src\IPC\TCPClient.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Steam\Config\Config.cpp" />
+    <ClCompile Include="src\Steam\Login\LoginVDF.cpp" />
+    <ClCompile Include="src\Steam\Login\Selector.cpp" />
+    <ClCompile Include="src\Steam\Select\Folder.cpp" />
+    <ClCompile Include="src\Steam\VDF\checker.cpp" />
+    <ClCompile Include="src\Steam\VDF\func\readerFunc.cpp" />
+    <ClCompile Include="src\Steam\VDF\func\SteamInput.cpp" />
+    <ClCompile Include="src\Steam\VDF\func\writerFunc.cpp" />
+    <ClCompile Include="src\Steam\VDF\Reader.cpp" />
+    <ClCompile Include="src\Steam\VDF\Writer.cpp" />
+    <ClCompile Include="src\Utils\Utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="src\DI\nput.h" />
+    <ClInclude Include="src\GUI\GUI.h" />
+    <ClInclude Include="src\GUI\Loading.h" />
+    <ClInclude Include="src\GUI\Notification.h" />
+    <ClInclude Include="src\GUI\Renderer.h" />
+    <ClInclude Include="src\GUI\Renderer\Texture.h" />
+    <ClInclude Include="src\GUI\Tabs.h" />
+    <ClInclude Include="src\GUI\Tabs\ControllerHub.h" />
+    <ClInclude Include="src\GUI\UI.h" />
+    <ClInclude Include="src\IPC\TCPConfig.h" />
+    <ClInclude Include="src\IPC\TCPClient.h" />
+    <ClInclude Include="src\IPC\Shared\Protocol.h" />
+    <ClInclude Include="src\Steam\Config\Config.h" />
+    <ClInclude Include="src\Steam\Login\LoginVDF.h" />
+    <ClInclude Include="src\Steam\Login\Selector.h" />
+    <ClInclude Include="src\Steam\Login\SteamUser.h" />
+    <ClInclude Include="src\Steam\Select\Folder.h" />
+    <ClInclude Include="src\Steam\VDF\checker.h" />
+    <ClInclude Include="src\Steam\VDF\func\readerFunc.h" />
+    <ClInclude Include="src\Steam\VDF\func\SteamInput.h" />
+    <ClInclude Include="src\Steam\VDF\func\writerFunc.h" />
+    <ClInclude Include="src\Steam\VDF\Reader.h" />
+    <ClInclude Include="src\Steam\VDF\Shortcut.h" />
+    <ClInclude Include="src\Steam\VDF\Writer.h" />
+    <ClInclude Include="src\Utils\Utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DevlitchInput.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\icon.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

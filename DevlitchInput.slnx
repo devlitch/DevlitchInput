@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="DevlitchInput.vcxproj" Id="991fc001-d157-4562-9c61-5f2c116f0798" />
+</Solution>
