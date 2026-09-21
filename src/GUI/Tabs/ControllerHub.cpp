@@ -267,7 +267,7 @@ void ControllerHub::Render() {
 	// Footer
 	//========================================================
 	const char* leftText = "https://github.com/devlitch/DevlitchInput";
-	const char* rightText = "v1.5";
+	const char* rightText = "v1.5f";
 	float rightWidth = ImGui::CalcTextSize(rightText).x;
 	ImGui::PushStyleColor(ImGuiCol_Text, UI::Dim);
 	ImGui::SetCursorPosX(7.0f);
