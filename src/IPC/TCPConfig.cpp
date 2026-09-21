@@ -183,10 +183,12 @@ bool TcpConfig::ReceivePayload(void* buffer, uint32_t size) {
 
 bool TcpConfig::checkMsg(std::string msg) {
     static const std::vector<std::string> blocked = {
-        "A blocking operation was interrupted by a call to WSACancelBlockingCall.",
+        "A blocking operation was interrupted by a call to WSACancelBlockingCall",
         "An existing connection was forcibly closed by the remote host",
         "End of file"
     };
+
+    if (!msg.empty() && msg.back() == '.') msg.pop_back();
 
     for (const auto& suffix : blocked) {
         if (msg.ends_with(suffix)) return false;

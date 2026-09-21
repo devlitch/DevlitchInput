@@ -69,8 +69,7 @@ bool ViGEmManager::EnsureController(SDL_JoystickID id, SDL_Gamepad* gamepad, boo
     VirtualPad* virtualPad = pad.get();
     pads.emplace(id, std::move(pad));
 
-    //if (rumble) vigem_target_x360_register_notification(client, virtualPad->target, RumbleCallback, virtualPad);
-    vigem_target_x360_register_notification(client, virtualPad->target, RumbleCallback, virtualPad);
+    if (rumble) vigem_target_x360_register_notification(client, virtualPad->target, RumbleCallback, virtualPad);
     return true;
 }
 
