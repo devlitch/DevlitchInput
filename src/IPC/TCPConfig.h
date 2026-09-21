@@ -37,6 +37,7 @@ public:
 private:
     bool ReadExact(void* buffer, std::size_t size);
     bool WriteExact(const void* buffer, std::size_t size);
+    bool checkMsg(std::string msg);
 private:
     std::thread m_ioThread;
     std::string m_host;

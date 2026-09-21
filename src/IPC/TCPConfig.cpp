@@ -102,7 +102,8 @@ bool TcpConfig::ReceiveHeader(IPC::PacketHeader& header) {
         return true;
     } catch (const std::exception& e) {
         if (m_stopping) return false;
-        gui.ShowError(std::string("[IPC] ReceiveHeader failed: \n") + e.what());
+        std::string msg = e.what();
+        if (checkMsg(msg)) gui.ShowError(std::string("[IPC] ReceiveHeader failed: \n") + e.what());
         return false;
     }
 }
@@ -146,4 +147,19 @@ bool TcpConfig::WriteExact(const void* buffer, std::size_t size) {
     } catch (...) {
         return false;
     }
+}
+
+bool TcpConfig::checkMsg(std::string msg) {
+    static const std::vector<std::string> blocked = {
+        "A blocking operation was interrupted by a call to WSACancelBlockingCall",
+        "An existing connection was forcibly closed by the remote host",
+        "End of file",
+    };
+
+    if (!msg.empty() && msg.back() == '.') msg.pop_back();
+
+    for (const auto& suffix : blocked) {
+        if (msg.ends_with(suffix)) return false;
+    }
+    return true;
 }
