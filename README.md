@@ -37,7 +37,7 @@ Virtual Xbox 360 Controller
 ```
 ---
 
-![DevlitchInput Screenshot](assets/Screenshots/1.png)
+![DevlitchInput Screenshot](assets/Screenshots/v1.6.png)
 
 ---
 
