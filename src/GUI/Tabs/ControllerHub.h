@@ -1,8 +1,6 @@
 #pragma once
-
+constexpr float PI = 3.14159265358979323846f;
 class ControllerHub {
 public:
-	void init();
-private:
 	void Render();
 };

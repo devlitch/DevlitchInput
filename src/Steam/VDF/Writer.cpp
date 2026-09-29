@@ -3,9 +3,9 @@
 static uint32_t crcTable[256];
 bool crcSetup = false;
 void Writer::InitCRC32() {
-	for (uint32_t i = 0; i < 256; i++) {
+	for (uint32_t i = 0; i < 256; ++i) {
 		uint32_t c = i;
-		for (int j = 0; j < 8; j++) {
+		for (int j = 0; j < 8; ++j) {
 			if (c & 1) c = 0xEDB88320 ^ (c >> 1);
 			else c >>= 1;
 		}
@@ -50,7 +50,7 @@ void Writer::WriteShortcut(WriterFunc& w, const Shortcut& sc) {
 	for (size_t i = 0; i < sc.Tags.size(); ++i) w.WriteString(to_string(i), sc.Tags[i]);
 	w.EndDict();
 }
-void Writer::WriteShortcuts(string path, const vector<Shortcut>& shortcuts) {
+void Writer::WriteShortcuts(const string& path, const vector<Shortcut>& shortcuts) {
 	WriterFunc w;
 	w.Open(path);
 	w.BeginDict("shortcuts");

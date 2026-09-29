@@ -37,6 +37,7 @@ std::vector<SteamUser> LoginVDF::LoadSteamUsers(const std::string& steamFolder) 
 				user.avatarUrl.clear();
 				user.local = 0;
 			}
+			user.id = (uint64_t)(user.id - 76561197960265728ULL);
 			users.push_back(std::move(user));
 		}
 	} catch (...) {

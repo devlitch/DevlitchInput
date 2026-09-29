@@ -1,9 +1,6 @@
 #include "readerFunc.h"
-#include <fstream>
-    
-ifstream file;
 
-bool ReaderFunc::Open(string path) {
+bool ReaderFunc::Open(const string& path) {
     file.open(path, ios::binary);
     return file.is_open();
 }

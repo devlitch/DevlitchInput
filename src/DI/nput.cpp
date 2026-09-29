@@ -20,19 +20,17 @@ void DevlitchInput::ResetState() {
 	std::lock_guard<std::mutex> lock(stateMutex);
 	for (uint32_t i = 0; i < IPC::MAX_CONTROLLERS; ++i) {
 		controllers[i] = {};
-		connectState[i] = IPC::RequestState::Idle;
-		pingState[i] = IPC::RequestState::Idle;
 	}
 }
 bool DevlitchInput::UpdateControllers() {
 	ResetState();
 	return client.func.Send(IPC::PacketType::ListControllers);
 }
-int DevlitchInput::FindController(IPC::ControllerInfo* controllers, uint32_t id) {
+int DevlitchInput::FindController(uint32_t id) {
 	{
 		std::lock_guard<std::mutex> lock(stateMutex);
 		for (int i = 0; i < static_cast <int>(IPC::MAX_CONTROLLERS); ++i) {
-			if (controllers[i].id == id) { return i; }
+			if (controllers[i].info.id == id) { return i; }
 		}
 		refreshing = true;
 	}
@@ -147,6 +145,32 @@ void DevlitchInput::ReceiveLoop() {
 			break;
 		}
 		//====================================================
+		// Controller Set Rumble
+		//====================================================
+		case IPC::PacketType::ControllerSetRumble: {
+			IPC::SwitchRumblePayload payload{};
+			if (!client.func.ReceivePayload(payload, header.payloadSize)) {
+				Stop();
+				break;
+			}
+			HandleControllerState(payload.controllerId, ControllerState::SwitchRumble, payload.enabled);
+			break;
+		}
+		//====================================================
+		// Controller Rumble State
+		//====================================================
+		case IPC::PacketType::ControllerRumbleState: {
+			IPC::SwitchRumblePayload payload{};
+			if (!client.func.ReceivePayload(payload, header.payloadSize)) {
+				Stop();
+				break;
+			}
+			int index = FindController(payload.controllerId);
+			if (index < 0) return;
+			controllers[index].info.rumble = payload.enabled;
+			break;
+		}
+		//====================================================
 		// Controller Pinged
 		//====================================================
 		case IPC::PacketType::ControllerPinged: {
@@ -203,22 +227,29 @@ void DevlitchInput::HandleError(const IPC::ErrorPayload& response) {
 		break;
 	}
 	case IPC::ErrorType::Connect:
+	case IPC::ErrorType::SwitchRumble:
+	case IPC::ErrorType::RumbleState:
 	case IPC::ErrorType::Ping: {
 		std::string notiMsg;
 		uint8_t status = response.errorCode / 100;
 		uint8_t controllerId = response.errorCode % 100;
-		int index = FindController(controllers, controllerId);
+		int index = FindController(controllerId);
 		if (index < 0) break;
 		{
 			std::lock_guard<std::mutex> lock(stateMutex);
-			notiMsg = controllers[index].name;
-			if (response.type != IPC::ErrorType::Ping) {
-				controllers[index].connected = status;
-				connectState[index] = IPC::RequestState::Failed;
-				notiMsg += status ? " dis" : " ";
-				notiMsg += "connect request failed.";
+			notiMsg = controllers[index].info.name;
+			if (response.type == IPC::ErrorType::Connect) {
+				controllers[index].info.connected = status;
+				controllers[index].connectState = RequestState::Failed;
+				notiMsg += status ? " disconnect request failed." : " connect request failed.";
+			} else if (response.type == IPC::ErrorType::SwitchRumble) {
+				controllers[index].rumbleSwitchState = RequestState::Failed;
+				notiMsg = notiMsg + " Switch rumble failed.";
+			} else if (response.type == IPC::ErrorType::RumbleState) {
+				controllers[index].rumbleSwitchState = RequestState::Failed;
+				notiMsg = notiMsg + " get rumbleState failed.";
 			} else {
-				pingState[index] = IPC::RequestState::Failed;
+				controllers[index].pingState = RequestState::Failed;
 				notiMsg = notiMsg + " Ping failed.";
 			}
 			
@@ -241,7 +272,7 @@ void DevlitchInput::HandleControllerList(const IPC::ControllerListPayload& respo
 		std::lock_guard<std::mutex> lock(stateMutex);
 		refreshing = false;
 		for (uint32_t i = 0; i < count; ++i) {
-			controllers[i] = response.controllers[i];
+			controllers[i].info = response.controllers[i];
 		}
 	}
 	notificationManager.Show(Notification::Type::Success, "Controller list updated. " + std::to_string(count) + " device(s) found.");
@@ -249,21 +280,27 @@ void DevlitchInput::HandleControllerList(const IPC::ControllerListPayload& respo
 //============================================================
 // Controller State Changed
 //============================================================
-void DevlitchInput::HandleControllerState(uint32_t controllerId, ControllerState type) {
+void DevlitchInput::HandleControllerState(uint32_t controllerId, ControllerState type, bool value) {
 	std::string notiMsg;
-	int index = FindController(controllers, controllerId);
+	int index = FindController(controllerId);
 	if (index < 0) return;
 	{
 		std::lock_guard<std::mutex> lock(stateMutex);
-		notiMsg = controllers[index].name;
-		if (type != ControllerState::Ping) {
+		notiMsg = controllers[index].info.name;
+		if (type == ControllerState::Connect || type == ControllerState::Disconnect) {
 			bool connectionState = type == ControllerState::Connect;
-			controllers[index].connected = connectionState ? 1: 0;
-			connectState[index] = IPC::RequestState::Success;
+			controllers[index].info.connected = connectionState ? 1: 0;
+			controllers[index].connectState = RequestState::Success;
 			notiMsg += connectionState ? " connected." : " disconnected.";
-		}
-		else {
-			pingState[index] = IPC::RequestState::Success;
+			IPC::ControllerPayload payload{};
+			payload.controllerId = controllers[index].info.id;
+			if (connectionState && !client.func.Send(IPC::PacketType::GetRumbleState, payload)) notificationManager.Show(Notification::Type::Error, "Failed to get rumble state.");
+		} else if (type == ControllerState::SwitchRumble) {
+			controllers[index].rumbleSwitchState = RequestState::Success;
+			controllers[index].info.rumble = value ? 1 : 0;
+			notiMsg += value ? " rumble enabled." : " rumble disabled.";
+		} else {
+			controllers[index].pingState = RequestState::Success;
 			notiMsg += " Pinged";
 		}
 	}

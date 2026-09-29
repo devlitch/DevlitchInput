@@ -5,7 +5,9 @@
 
 #include <stdexcept>
 
-#include "../Config/Config.h"
+#include "../Login/LoginVDF.h"
+#include "../Login/Selector.h"
+#include "../../Config/Config.h"
 #include "../../Utils/Utils.h"
 #include "../../GUI/GUI.h"
 
@@ -28,13 +30,12 @@ bool Checker::init() {
                 "This has caused your config to be reset.\n\n"
                 "Please launch the application again."
             );
-            cfg.ResetConfig();
+            cfg.ResetSteamConfig();
             return false;
         }
     }
     vector<Shortcut> shortcuts;
-    try
-    {
+    try {
         if(exists) shortcuts = Reader{}.ReadShortcuts(shortcutPath);
     } catch (const exception& e) {
         gui.ShowError("Something went wrong while trying to read your shortcuts.");
@@ -66,7 +67,8 @@ bool Checker::init() {
             SDL_MESSAGEBOX_INFORMATION,
             gui.window,
             "DevlitchInput - Steam",
-            "Steam must be closed to install the program.\n\nDo you want to restart Steam now?",
+            "Steam must be closed to install the program.\n\n"
+            "Do you want to restart Steam now?",
             SDL_arraysize(buttons),
             buttons,
             nullptr
@@ -80,6 +82,7 @@ bool Checker::init() {
             gui.BringWindowToFront();
             TerminateSteam();
         } else {
+            cfg.ResetSteamConfig(0);
             gui.LoadingText("Exiting");
             gui.ShowError("User cancelled\nInstall it manually or Launch it again");
             gui.Pause();
@@ -120,21 +123,61 @@ bool Checker::init() {
     }
     gui.LoadingText("Starting DevlitchInput_SP");
     if (fs::exists(portPath)) fs::remove(portPath);
-    ShellExecuteA(NULL,
-        "open",
-        ("steam://rungameid/" + std::to_string(AppIDToRunGameID(appId))).c_str(),
-        NULL, NULL, SW_SHOWNORMAL
-    );
+    while (true) {
+        if (std::to_string(LoginVDF{}.LoadSteamUsers(cfg.SteamFolder)[0].id) == cfg.accountId) {
+            ShellExecuteA(NULL,
+                "open",
+                ("steam://rungameid/" + std::to_string(AppIDToRunGameID(appId))).c_str(),
+                NULL, NULL, SW_SHOWNORMAL
+            );
+            break;
+        }
+        const SDL_MessageBoxButtonData buttons[] = {
+            {
+                SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0,
+                "Cancel"
+            },
+            {
+                SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1,
+                "Yes"
+            }
+        };
+        const SDL_MessageBoxData messageBox = {
+            SDL_MESSAGEBOX_INFORMATION,
+            gui.window,
+            "DevlitchInput - Steam",
+            "The current Steam user is different from the selected user.\n\n"
+            "Would you like to select another user?",
+            SDL_arraysize(buttons),
+            buttons,
+            nullptr
+        };
+
+        int buttonId = 0;
+
+        SDL_ShowMessageBox(&messageBox, &buttonId);
+
+        if (buttonId == 1) {
+            cfg.ResetSteamConfig(0);
+            UserSelector{}.init();
+            continue;
+        }
+
+        gui.LoadingText("Exiting");
+        gui.Pause();
+        return 0;
+    }
+        
     return true;
 }
 
-uint32_t Checker::findAppID(std::string target, std::vector<Shortcut> shortcuts) {
+uint32_t Checker::findAppID(const std::string& target, const std::vector<Shortcut>& shortcuts) {
     uint32_t appId = 0;
-    for (auto& s : shortcuts) {
+    for (const auto& s : shortcuts) {
         string exe = CleanPath(s.Exe);
-        if (exe == target) { appId = s.appid; break; }
+        if (exe == target) return s.appid;
     }
-    return appId;
+    return 0;
 }
 
 uint64_t Checker::AppIDToRunGameID(uint32_t appid) {

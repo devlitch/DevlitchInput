@@ -1,6 +1,7 @@
 #include "TcpConfig.h"
 
 #include <stdexcept>
+#include <string_view>
 
 TcpConfig::TcpConfig() : m_socket(m_ioContext) {}
 
@@ -149,17 +150,19 @@ bool TcpConfig::WriteExact(const void* buffer, std::size_t size) {
     }
 }
 
-bool TcpConfig::checkMsg(std::string msg) {
+bool TcpConfig::checkMsg(const std::string& msg) {
     static const std::vector<std::string> blocked = {
         "A blocking operation was interrupted by a call to WSACancelBlockingCall",
         "An existing connection was forcibly closed by the remote host",
         "End of file",
     };
 
-    if (!msg.empty() && msg.back() == '.') msg.pop_back();
+    std::string_view text = msg;
+
+    if (!text.empty() && text.back() == '.') text.remove_suffix(1);
 
     for (const auto& suffix : blocked) {
-        if (msg.ends_with(suffix)) return false;
+        if (text.ends_with(suffix)) return false;
     }
     return true;
 }

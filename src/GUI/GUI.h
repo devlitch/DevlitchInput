@@ -16,6 +16,11 @@
 
 #include "Renderer.h"
 
+struct GUIOptions {
+    bool minimizeToTray = false;
+    bool closeToTray = false;
+};
+
 class GUI {
 public:
     bool Init();
@@ -47,7 +52,7 @@ public:
     void RaiseWindow();
     void BringWindowToFront();
 
-    void ShowError(std::string text);
+    void ShowError(const std::string& text);
 
     Renderer renderer;
     SDL_Window* window = nullptr;
@@ -73,6 +78,14 @@ private:
     void BeginFrame();
     void Render();
     RenderCallback renderCallback;
+public:
+    void SetMinimizeToTray(bool enabled);
+    void SetCloseToTray(bool enabled);
+
+    GUIOptions options;
+private:
+    bool restoringFromTray = false;
+    void MinimizeToTray();
 };
 
 template<typename F>

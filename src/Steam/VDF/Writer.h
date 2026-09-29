@@ -11,7 +11,7 @@ using namespace std;
 
 class Writer {
 public:
-    void WriteShortcuts(string path, const vector<Shortcut>& shortcuts);
+    void WriteShortcuts(const string& path, const vector<Shortcut>& shortcuts);
     uint32_t GenerateAppID(const string& exe, const string& appName);
     bool BackupFile(const string& original, const string& backup);
     bool CanWriteFile(const string& path);

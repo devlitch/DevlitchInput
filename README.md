@@ -62,6 +62,7 @@ Steam Remote Play controllers are often:
 - Lightweight and low-latency design
 - Supports multiple controllers simultaneously
 - Rumble/Vibration forwarding
+- System Tray with ability to minimize the program into it
 
 ---
 
@@ -122,13 +123,19 @@ DevlitchInput only accesses these files locally and does not upload or transmit 
 2. `SteamFolder`
 3. `Username` — Stored only to display/identify the selected Steam user.
 
-All of this information is stored in `Config.json` in the same folder as the program.
+### 📁 Where Is It Stored?
+
+All of the above information is stored locally in:
+
+`Config.json`
+
+The file is located in the **same folder as the DevlitchInput executable**.
+
+> **Privacy Note:** DevlitchInput does **not** store any data in the Windows Registry or `%AppData%`.
 
 ---
 
 ## 🧠 Future Plans
-- Switch user button [For now, delete `Config.json` to switch users]
-- System Tray with ability to minimize the program into it
 - Virtual Playstation controller output
 - Advanced input mapping system
 - Per-game profiles
@@ -145,7 +152,7 @@ All of this information is stored in `Config.json` in the same folder as the pro
 - ValveFileVDF@1.1.1
 - nlohmann/json@3.12.0
 - asio@1.38.2
-- imgui@1.92.8 [Already included in the project]
+- imgui@1.92.9b [Already included in the project]
 
 1. Clone the repository
 2. Install the required dependencies

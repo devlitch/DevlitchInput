@@ -9,6 +9,21 @@
 #include <string>
 #include <thread>
 
+enum class RequestState {
+	Idle,
+	Pending,
+	Success,
+	Failed
+};
+
+struct ControllerView {
+	IPC::ControllerInfo info{};
+	RequestState connectState = RequestState::Idle;
+	RequestState pingState = RequestState::Idle;
+	RequestState rumbleSwitchState = RequestState::Idle;
+	bool vibrationDropdownOpen = false;
+};
+
 class DevlitchInput {
 public:
 	void init();
@@ -19,9 +34,10 @@ private:
 	enum class ControllerState {
 		Connect,
 		Disconnect,
+		SwitchRumble,
 		Ping
 	};
-	int FindController(IPC::ControllerInfo* controllers, uint32_t id);
+	int FindController(uint32_t id);
 private:
 	//==================================================
 	// Main
@@ -33,7 +49,7 @@ private:
 	void HandleSuccess(const IPC::SuccessPayload& response);
 	void HandleError(const IPC::ErrorPayload& response);
 	void HandleControllerList(const IPC::ControllerListPayload& response);
-	void HandleControllerState(uint32_t controllerId, ControllerState type);
+	void HandleControllerState(uint32_t controllerId, ControllerState type, bool value = false);
 private:
 	//==================================================
 	// Thread
@@ -52,12 +68,7 @@ public:
 	//==================================================
 	// Controllers
 	//==================================================
-	IPC::ControllerInfo controllers[IPC::MAX_CONTROLLERS]{};
-	//==================================================
-	// Request State
-	//==================================================
-	IPC::RequestState connectState[IPC::MAX_CONTROLLERS]{};
-	IPC::RequestState pingState[IPC::MAX_CONTROLLERS]{};
+	ControllerView controllers[IPC::MAX_CONTROLLERS]{};
 };
 
 inline DevlitchInput di;

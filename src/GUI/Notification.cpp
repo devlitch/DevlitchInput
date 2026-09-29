@@ -99,6 +99,21 @@ void NotificationManager::Render() {
 	ImVec2 max(pos.x + width, pos.y + height);
 	ImDrawList* drawList = ImGui::GetForegroundDrawList();
 	//========================================================
+// Click to dismiss
+//========================================================
+	ImVec2 mousePos = ImGui::GetMousePos();
+
+	bool hovered =
+		mousePos.x >= pos.x &&
+		mousePos.x <= max.x &&
+		mousePos.y >= pos.y &&
+		mousePos.y <= max.y;
+
+	if (hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+		Clear();
+		return;
+	}
+	//========================================================
 	// Shadow
 	//========================================================
 	drawList->AddRectFilled(ImVec2(pos.x + 4.0f, pos.y + 5.0f), ImVec2(max.x + 4.0f, max.y + 5.0f), IM_COL32(0, 0, 0, 90), 12.0f);
@@ -109,7 +124,7 @@ void NotificationManager::Render() {
 	//========================================================
 	// Border
 	//========================================================
-	drawList->AddRect(pos, max, ImGui::ColorConvertFloat4ToU32(border), 12.0f, 0, 1.0f);
+	drawList->AddRect(pos, max, ImGui::ColorConvertFloat4ToU32(border), 12.0f, 1.0f);
 	//========================================================
 	// Title
 	//========================================================

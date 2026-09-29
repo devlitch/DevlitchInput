@@ -49,9 +49,6 @@
     <Filter Include="Source Files\Steam\VDF\Writer\func">
       <UniqueIdentifier>{6c6c366f-af46-4081-b661-0bbaf4c89f24}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Steam\Config">
-      <UniqueIdentifier>{fb9d4949-1c00-4cb5-9a99-3cd0f0c3dc74}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Steam\Login">
       <UniqueIdentifier>{7595f3ed-7055-4800-adb6-e8b8ee1c19ae}</UniqueIdentifier>
     </Filter>
@@ -94,6 +91,15 @@
     <Filter Include="Source Files\Steam\Select">
       <UniqueIdentifier>{da92eba9-0bab-4210-9454-480e39e33afd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Tray">
+      <UniqueIdentifier>{42b344a0-4f77-4930-b2a1-9455d8e08d8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI\Tabs\SettingsTab">
+      <UniqueIdentifier>{02e13f15-0a54-4ebb-bea1-c81eac1fcd62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Config">
+      <UniqueIdentifier>{fb9d4949-1c00-4cb5-9a99-3cd0f0c3dc74}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -119,9 +125,6 @@
     </ClCompile>
     <ClCompile Include="external\imgui\backends\imgui_impl_sdlgpu3.cpp">
       <Filter>Source Files\External\imgui\Backends</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Steam\Config\Config.cpp">
-      <Filter>Source Files\Steam\Config</Filter>
     </ClCompile>
     <ClCompile Include="src\Steam\Login\Selector.cpp">
       <Filter>Source Files\Steam\Login\Selector</Filter>
@@ -183,6 +186,18 @@
     <ClCompile Include="src\Steam\Select\Folder.cpp">
       <Filter>Source Files\Steam\Select</Filter>
     </ClCompile>
+    <ClCompile Include="src\Tray\Tray.cpp">
+      <Filter>Source Files\Tray</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI\Tabs\SettingsTab.cpp">
+      <Filter>Source Files\GUI\Tabs\SettingsTab</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Config\Config.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\SingleInstance.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -190,9 +205,6 @@
     </ClInclude>
     <ClInclude Include="src\GUI\GUI.h">
       <Filter>Source Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Steam\Config\Config.h">
-      <Filter>Source Files\Steam\Config</Filter>
     </ClInclude>
     <ClInclude Include="src\Steam\Login\SteamUser.h">
       <Filter>Source Files\Steam\Login</Filter>
@@ -262,6 +274,18 @@
     </ClInclude>
     <ClInclude Include="src\Steam\Select\Folder.h">
       <Filter>Source Files\Steam\Select</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Tray\Tray.h">
+      <Filter>Source Files\Tray</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI\Tabs\SettingsTab.h">
+      <Filter>Source Files\GUI\Tabs\SettingsTab</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Config\Config.h">
+      <Filter>Source Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\SingleInstance.h">
+      <Filter>Source Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

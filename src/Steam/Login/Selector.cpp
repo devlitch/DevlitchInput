@@ -7,12 +7,11 @@
 #include "assets/guest.h"
 #include "../../GUI/GUI.h"
 #include "LoginVDF.h"
-#include "../Config/Config.h"
+#include "../../Config/Config.h"
 
 void UserSelector::init() {
     gui.LoadingText("UserSelector$ Loading");
-    LoginVDF loginVDF;
-    users = loginVDF.LoadSteamUsers(cfg.SteamFolder);
+    users = LoginVDF{}.LoadSteamUsers(cfg.SteamFolder);
     gui.ShowWindow(0);
     gui.SetSize(800, 600);
     gui.Borderless();
@@ -21,7 +20,7 @@ void UserSelector::init() {
 
     gui.RunOnThread([&] {
         LoadAvatars(gui.renderer);
-     }).get();
+    }).get();
 
     gui.SetRender([&](){
         Render();
@@ -69,7 +68,7 @@ void UserSelector::Render() {
         float startY = (ImGui::GetWindowHeight() - itemHeight) * 0.5f;
         ImGui::SetCursorPosY(startY);
 
-        for (int i = 0; i < userCount; i++) {
+        for (int i = 0; i < userCount; ++i) {
             if (i % itemsPerRow == 0) {
                 int remaining = userCount - i;
                 int itemsInRow = std::min(itemsPerRow, remaining);
@@ -85,7 +84,7 @@ void UserSelector::Render() {
             if (ImGui::IsItemClicked()) {
                 gui.ShowWindow(0);
                 cfg.User = users[i].name.c_str();
-                uint64_t accountId = (uint64_t)(users[i].id - 76561197960265728ULL);
+                uint64_t accountId = users[i].id;
                 cfg.accountId = std::to_string(accountId);
                 cfg.SaveConfig();
                 gui.Pause();
@@ -93,7 +92,7 @@ void UserSelector::Render() {
             hovered = ImGui::IsItemHovered();
             if (hovered) {
                 ImDrawList* draw = ImGui::GetWindowDrawList();
-                draw->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
+                draw->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 255, 255, 255), 0.0f, 2.0f);
 
                 const char* name = users[i].name.c_str();
                 ImVec2 textSize = ImGui::CalcTextSize(name);

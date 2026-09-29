@@ -4,22 +4,11 @@
 #include "../GUI.h"
 #include "../UI.h"
 #include "../Notification.h"
+#include "../Tabs.h"
 
 #include <imgui.h>
 
-void ControllerHub::init() {
-	gui.SetRender([&]() {
-		Render();
-	});
-	gui.LoadingOff();
-	gui.Wait();
-}
-
 void ControllerHub::Render() {
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->Pos);
-	ImGui::SetNextWindowSize(viewport->Size);
-	ImGui::Begin("Controller Manager", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 	//========================================================
 	// Connected Count
 	//========================================================
@@ -28,9 +17,7 @@ void ControllerHub::Render() {
 	{
 		std::lock_guard<std::mutex> lock(di.stateMutex);
 		for (uint32_t i = 0; i < IPC::MAX_CONTROLLERS; ++i) {
-			if (di.controllers[i].id != 0 && di.controllers[i].connected) {
-				++connectedCount;
-			}
+			if (di.controllers[i].info.id != 0 && di.controllers[i].info.connected) ++connectedCount;
 		}
 		currentRefreshing = di.refreshing;
 	}
@@ -53,6 +40,96 @@ void ControllerHub::Render() {
 	ImGui::PushStyleColor(ImGuiCol_Text, UI::Muted);
 	ImGui::Text("/ %d online", IPC::MAX_CONTROLLERS);
 	ImGui::PopStyleColor();
+	//========================================================
+	// Settings
+	//========================================================
+	ImGui::SetCursorPos(ImVec2(headerRight - 38.0f, 30.0f));
+
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	ImVec2 settingsPos = ImGui::GetCursorScreenPos();
+	ImVec2 settingsSize(32.0f, 32.0f);
+
+	ImGui::InvisibleButton("##Settings", settingsSize);
+
+	if (ImGui::IsItemClicked()) tab.setTab(Tab::Settings);
+
+	bool hovered = ImGui::IsItemHovered();
+
+	ImVec2 center(
+		settingsPos.x + settingsSize.x * 0.5f,
+		settingsPos.y + settingsSize.y * 0.5f
+	);
+
+	//========================================================
+	// Settings Gear
+	//========================================================
+	ImU32 gearColor = hovered ? IM_COL32(220, 225, 235, 255) : IM_COL32(150, 158, 175, 255);
+
+	const float outerRadius = 9.0f;
+	const float innerRadius = 6.8f;
+	const float holeRadius = 2.7f;
+
+	const int teeth = 8;
+	const int pointsPerTooth = 4;
+
+	ImVec2 gearCenter(
+		settingsPos.x + settingsSize.x * 0.5f,
+		settingsPos.y + settingsSize.y * 0.5f
+	);
+
+	ImVector<ImVec2> gearPoints;
+	gearPoints.reserve(teeth * pointsPerTooth);
+
+	//========================================================
+	// Gear Shape
+	//========================================================
+	for (int i = 0; i < teeth; ++i) {
+
+		float baseAngle = (2.0f * PI / teeth) * i;
+
+		// inner -> outer -> outer -> inner
+		constexpr float toothWidth = 0.30f;
+
+		float angles[4] = {
+			baseAngle - toothWidth,
+			baseAngle - toothWidth * 0.45f,
+			baseAngle + toothWidth * 0.45f,
+			baseAngle + toothWidth
+		};
+
+		float radii[4] = {
+			innerRadius,
+			outerRadius,
+			outerRadius,
+			innerRadius
+		};
+
+		for (int j = 0; j < 4; ++j) {
+			gearPoints.push_back(ImVec2(
+				gearCenter.x + cosf(angles[j]) * radii[j],
+				gearCenter.y + sinf(angles[j]) * radii[j]
+			));
+		}
+	}
+
+	// Gear Body
+	drawList->AddConvexPolyFilled(
+		gearPoints.Data,
+		gearPoints.Size,
+		gearColor
+	);
+
+	//========================================================
+	// Center Hole
+	//========================================================
+	drawList->AddCircleFilled(
+		gearCenter,
+		holeRadius,
+		IM_COL32(30, 34, 45, 255),
+		20
+	);
+
 	//========================================================
 	// Controller Card
 	//========================================================
@@ -97,23 +174,15 @@ void ControllerHub::Render() {
 	constexpr float rowHeight = 62.0f;
 	int visibleRow = 0;
 	for (uint32_t i = 0; i < IPC::MAX_CONTROLLERS; ++i) {
-		IPC::ControllerInfo controller{};
-		IPC::RequestState currentConnectState = IPC::RequestState::Idle;
-		IPC::RequestState currentPingState = IPC::RequestState::Idle;
-		{
-			std::lock_guard<std::mutex> lock(di.stateMutex);
-			controller = di.controllers[i];
-			currentConnectState = di.connectState[i];
-			currentPingState = di.pingState[i];
-		}
+		ControllerView& controller = di.controllers[i];
 		//====================================================
 		// Empty slot
 		//====================================================
-		if (controller.id == 0) continue;
+		if (controller.info.id == 0) continue;
 		float y = 82.0f + visibleRow * rowHeight;
 		++visibleRow;
 		ImGui::SetCursorPos(ImVec2(12.0f, y));
-		ImGui::PushID(static_cast <int> (controller.id));
+		ImGui::PushID(static_cast <int> (controller.info.id));
 		//====================================================
 		// Row Background
 		//====================================================
@@ -129,31 +198,65 @@ void ControllerHub::Render() {
 		//====================================================
 		// LED
 		//====================================================
-		UI::DrawLED(drawList, ImVec2(rowMin.x + 27.0f, rowMin.y + 30.0f), controller.connected != 0);
+		UI::DrawLED(drawList, ImVec2(rowMin.x + 27.0f, rowMin.y + 30.0f), controller.info.connected != 0);
 		//====================================================
 		// Controller Name
 		//====================================================
 		ImGui::SetCursorPos(ImVec2(52.0f, 19.0f));
-		ImGui::PushStyleColor(ImGuiCol_Text, controller.connected ? UI::Text : UI::Muted);
-		ImGui::TextUnformatted(controller.name);
+		ImGui::PushStyleColor(ImGuiCol_Text, controller.info.connected ? UI::Text : UI::Muted);
+		ImGui::TextUnformatted(controller.info.name);
 		ImGui::PopStyleColor();
 		//====================================================
 		// Connect Pending
 		//====================================================
-		bool connectPending = currentConnectState == IPC::RequestState::Pending;
+		bool connectPending = controller.connectState == RequestState::Pending;
 		if (connectPending) {
 			ImGui::SetCursorPos(ImVec2(52.0f, 40.0f));
 			ImGui::PushStyleColor(ImGuiCol_Text, UI::Yellow);
-			ImGui::TextUnformatted(controller.connected ? "Disconnecting" : "Connecting");
+			ImGui::TextUnformatted(controller.info.connected ? "Disconnecting" : "Connecting");
 			ImGui::PopStyleColor();
 		}
 		//====================================================
 		// Ping
 		//====================================================
-		bool pingPending = currentPingState == IPC::RequestState::Pending;
+		bool pingPending = controller.pingState == RequestState::Pending;
+		bool rumbleSwitchPending = controller.rumbleSwitchState == RequestState::Pending;
 		ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() - 265.0f, 11.0f));
-		std::string bellId = "Bell##" + std::to_string(controller.id);
-		bool pingClicked = UI::BellButton(bellId.c_str(), true, pingPending);
+		std::string vibrationId = "Vibration##" + std::to_string(controller.info.id);
+		ImVec2 vibrationPopupPos;
+		bool pingClicked = UI::VibrationButton(vibrationId.c_str(), controller.info.connected, pingPending, vibrationPopupPos);
+		bool rumbleSwitchToggled = UI::RenderVibrationDropdown(
+			vibrationId.c_str(),
+			controller.info.rumble,
+			vibrationPopupPos
+		);
+		//====================================================
+		// Rumble switch Request
+		//====================================================
+		if (rumbleSwitchToggled && !rumbleSwitchPending) {
+			bool canSwitch = false;
+			{
+				std::lock_guard<std::mutex> lock(di.stateMutex);
+				if (controller.rumbleSwitchState != RequestState::Pending) {
+					controller.rumbleSwitchState = RequestState::Pending;
+					canSwitch = true;
+				}
+			}
+			if (canSwitch) {
+				IPC::SwitchRumblePayload payload{};
+				payload.controllerId = controller.info.id;
+				payload.enabled = !controller.info.rumble;
+				if (!client.func.Send(IPC::PacketType::SetRumble, payload)) {
+					{
+						std::lock_guard<std::mutex> lock(di.stateMutex);
+						controller.rumbleSwitchState = RequestState::Failed;
+					}
+					notificationManager.Show(Notification::Type::Error, "Failed to send switch rumble request.");
+				} else {
+					notificationManager.Show(Notification::Type::Info, std::string(!controller.info.rumble ? "Enabling rumble " : "Disabling rumble ") + controller.info.name + "...");
+				}
+			}
+		}
 		//====================================================
 		// Ping Request
 		//====================================================
@@ -161,25 +264,25 @@ void ControllerHub::Render() {
 			bool canPing = false;
 			{
 				std::lock_guard<std::mutex> lock(di.stateMutex);
-				if (di.pingState[i] != IPC::RequestState::Pending) {
-					di.pingState[i] = IPC::RequestState::Pending;
+				if (controller.pingState != RequestState::Pending) {
+					controller.pingState = RequestState::Pending;
 					canPing = true;
 				}
 			}
 			if (canPing) {
 				IPC::TestRumblePayload payload{};
-				payload.controllerId = controller.id;
+				payload.controllerId = controller.info.id;
 				payload.largeMotor = 16000;
 				payload.smallMotor = 8000;
 				payload.durationMs = 869;
 				if (!client.func.Send(IPC::PacketType::TestRumble, payload)) {
 					{
 						std::lock_guard<std::mutex> lock(di.stateMutex);
-						di.pingState[i] = IPC::RequestState::Failed;
+						controller.pingState = RequestState::Failed;
 					}
 					notificationManager.Show(Notification::Type::Error, "Failed to send ping request.");
 				} else {
-					notificationManager.Show(Notification::Type::Info, "Checking " + std::string(controller.name) + "...");
+					notificationManager.Show(Notification::Type::Info, "Checking " + std::string(controller.info.name) + "...");
 				}
 			}
 		}
@@ -189,9 +292,9 @@ void ControllerHub::Render() {
 		ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() - 120.0f, 13.0f));
 		const char* action;
 		if (connectPending) {
-			action = controller.connected ? "Disconnecting" : "Connecting";
+			action = controller.info.connected ? "Disconnecting" : "Connecting";
 		} else {
-			action = controller.connected ? "Disconnect" : "Connect";
+			action = controller.info.connected ? "Disconnect" : "Connect";
 		}
 		bool actionClicked = false;
 		//====================================================
@@ -203,7 +306,7 @@ void ControllerHub::Render() {
 		//====================================================
 		// Disconnect
 		//====================================================
-		else if (controller.connected) {
+		else if (controller.info.connected) {
 			actionClicked = UI::ModernButton(action, ImVec2(105.0f, 36.0f), ImVec4(0.16f, 0.055f, 0.065f, 1.0f), ImVec4(0.30f, 0.07f, 0.08f, 1.0f), ImVec4(0.20f, 0.05f, 0.06f, 1.0f));
 		}
 		//====================================================
@@ -217,11 +320,11 @@ void ControllerHub::Render() {
 		//====================================================
 		if (actionClicked && !connectPending) {
 			bool canSend = false;
-			bool shouldDisconnect = controller.connected != 0;
+			bool shouldDisconnect = controller.info.connected != 0;
 			{
 				std::lock_guard<std::mutex> lock(di.stateMutex);
-				if (di.connectState[i] != IPC::RequestState::Pending) {
-					di.connectState[i] = IPC::RequestState::Pending;
+				if (controller.connectState != RequestState::Pending) {
+					controller.connectState = RequestState::Pending;
 					canSend = true;
 				}
 			}
@@ -230,12 +333,12 @@ void ControllerHub::Render() {
 				// Disconnect
 				//================================================
 				if (shouldDisconnect) {
-					notificationManager.Show(Notification::Type::Info, "Disconnecting " + std::string(controller.name) + "...");
+					notificationManager.Show(Notification::Type::Info, "Disconnecting " + std::string(controller.info.name) + "...");
 					IPC::ControllerPayload payload{};
-					payload.controllerId = controller.id;
+					payload.controllerId = controller.info.id;
 					if (!client.func.Send(IPC::PacketType::Disconnect, payload)) {
 						std::lock_guard<std::mutex> lock(di.stateMutex);
-						di.connectState[i] = IPC::RequestState::Failed;
+						controller.connectState = RequestState::Failed;
 						notificationManager.Show(Notification::Type::Error, "Failed to send disconnect request.");
 					}
 				}
@@ -243,12 +346,12 @@ void ControllerHub::Render() {
 				// Connect
 				//================================================
 				else {
-					notificationManager.Show(Notification::Type::Info, "Connecting " + std::string(controller.name) + "...");
+					notificationManager.Show(Notification::Type::Info, "Connecting " + std::string(controller.info.name) + "...");
 					IPC::ControllerPayload payload{};
-					payload.controllerId = controller.id;
+					payload.controllerId = controller.info.id;
 					if (!client.func.Send(IPC::PacketType::Connect, payload)) {
 						std::lock_guard<std::mutex> lock(di.stateMutex);
-						di.connectState[i] = IPC::RequestState::Failed;
+						controller.connectState = RequestState::Failed;
 						notificationManager.Show(Notification::Type::Error, "Failed to send connect request.");
 					}
 				}
@@ -263,18 +366,4 @@ void ControllerHub::Render() {
 	//========================================================
 	ImGui::EndChild();
 	ImGui::PopStyleColor();
-	//========================================================
-	// Footer
-	//========================================================
-	const char* leftText = "https://github.com/devlitch/DevlitchInput";
-	const char* rightText = "v1.5f";
-	float rightWidth = ImGui::CalcTextSize(rightText).x;
-	ImGui::PushStyleColor(ImGuiCol_Text, UI::Dim);
-	ImGui::SetCursorPosX(7.0f);
-	ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 32.0f);
-	ImGui::TextUnformatted(leftText);
-	ImGui::SameLine(ImGui::GetWindowWidth() - rightWidth - 7.0f);
-	ImGui::TextUnformatted(rightText);
-	ImGui::PopStyleColor();
-	ImGui::End();
 }

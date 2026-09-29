@@ -9,8 +9,7 @@ void Reader::ReadShortcut(ReaderFunc& r, Shortcut& sc) {
     while (true) {
         uint8_t type = r.Type();
 
-        if (type == VDF_END)
-            return;
+        if (type == VDF_END) return;
 
         string key = r.String();
 
@@ -71,23 +70,14 @@ void Reader::ReadShortcut(ReaderFunc& r, Shortcut& sc) {
     }
 }
 
-vector<Shortcut> Reader::ReadShortcuts(string path) {
+vector<Shortcut> Reader::ReadShortcuts(const string& path) {
     vector<Shortcut> result;
     ReaderFunc r;
-    if (!r.Open(path)) {
-        throw std::runtime_error("Failed to open shortcuts.vdf");
-        return result;
-    }
+    if (!r.Open(path)) throw std::runtime_error("Failed to open shortcuts.vdf");
     uint8_t type = r.Type();
-    if (type != VDF_DICT) {
-        throw std::runtime_error("Invalid VDF file");
-        return result;
-    }
+    if (type != VDF_DICT) throw std::runtime_error("Invalid VDF file");
     string root = r.String();
-    if (root != "shortcuts") {
-        throw std::runtime_error("Not shortcuts.vdf");
-        return result;
-    }
+    if (root != "shortcuts") throw std::runtime_error("Not shortcuts.vdf");
     while (true) {
         uint8_t t = r.Type();
         if (t == VDF_END) break;

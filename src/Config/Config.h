@@ -7,7 +7,7 @@ public:
 
     bool LoadConfig();
     bool SaveConfig();
-    bool ResetConfig();
+    bool ResetSteamConfig(bool t = true);
 
 public:
     std::string User = "";

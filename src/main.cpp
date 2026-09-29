@@ -2,35 +2,49 @@
 #include <cstdlib>
 
 #include "GUI/GUI.h"
-#include "GUI/Tabs.h"
-#include "Steam/Config/Config.h"
+#include "Config/Config.h"
 #include "Steam/Select/Folder.h"
 #include "Steam/Login/Selector.h"
 #include "Steam/VDF/checker.h"
 #include "DI/nput.h"
+#include "GUI/Tabs.h"
+#include "Utils/SingleInstance.h"
 
 int main() {
-    gui.Init();
-    
-    cfg.LoadConfig();
+    bool run = true;
 
-    if (cfg.SteamFolder.empty()) {
+    SingleInstance singleInstance;
+    if (!singleInstance.Acquire()) {
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "DevlitchInput Error",
+            "DevlitchInput is already running.",
+            nullptr
+        );
+        run = false;
+    }
+
+    if(run) gui.Init();
+
+    if (run && !cfg.LoadConfig()) {
+        run = false;
+    }
+
+    if (run && cfg.SteamFolder.empty()) {
         SelectSteamFolder{}.init();
+        if (cfg.SteamFolder.empty()) run = false;
     }
 
-    if (cfg.User.empty() && !cfg.SteamFolder.empty()) {
+    if (run && cfg.User.empty()) {
         UserSelector{}.init();
+        if (cfg.User.empty()) run = false;
     }
 
-    if(!cfg.User.empty() && !cfg.SteamFolder.empty()){
-        if (Checker{}.init()) {
-            if (client.init()) {
-                gui.RaiseWindow();
-                di.init();
-                tab.Render();
-                di.Stop();
-            }
-        }
+    if(run && Checker{}.init() && client.init()){
+        gui.RaiseWindow();
+        di.init();
+        tab.init();
+        di.Stop();
     }
 
     if (gui.isActive()) gui.Stop();

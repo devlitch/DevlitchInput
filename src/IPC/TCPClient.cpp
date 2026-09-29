@@ -40,7 +40,6 @@ int TcpClient::GetCurrentPort() {
     uint16_t port{};
     if (!IsValidPort(line, port)) return -1;
     return static_cast<int>(port);
-    return true;
 }
 
 bool TcpClient::IsValidPort(const std::string& value, uint16_t& port) {

@@ -3,7 +3,7 @@
 #include <array>
 
 #include "../../GUI/GUI.h"
-#include "../Config/Config.h"
+#include "../../Config/Config.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_dialog.h>

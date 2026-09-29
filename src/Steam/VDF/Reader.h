@@ -15,5 +15,5 @@ class Reader {
 public:
     void ReadShortcut(ReaderFunc& r, Shortcut& sc);
 
-    std::vector<Shortcut> ReadShortcuts(std::string path);
+    std::vector<Shortcut> ReadShortcuts(const std::string& path);
 };

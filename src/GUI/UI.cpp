@@ -70,11 +70,31 @@ namespace UI {
 		ImVec4 activeColor = ImVec4(0.12f, 0.23f, 0.36f, 1.0f);
 		return ModernButton(label, size, normal, hover, activeColor);
 	}
-	bool ModernButton(const char* label, ImVec2 size, ImVec4 normal, ImVec4 hover, ImVec4 active) {
+	bool ModernButton(const char* label, ImVec2 size, ImVec4 normal, ImVec4 hover, ImVec4 active, bool center) {
 		ImGui::PushStyleColor(ImGuiCol_Button, normal);
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hover);
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, active);
-		bool result = ImGui::Button(label, size);
+		bool result;
+		if (center) {
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 0));
+
+			result = ImGui::Button(label, size);
+
+			ImGui::PopStyleColor();
+
+			ImVec2 min = ImGui::GetItemRectMin();
+			ImVec2 max = ImGui::GetItemRectMax();
+
+			ImVec2 textSize = ImGui::CalcTextSize(label);
+
+			float x = min.x + (max.x - min.x - textSize.x) * 0.5f;
+			float y = min.y + (max.y - min.y - textSize.y) * 0.5f;
+
+			y -= 2.0f;
+			ImGui::GetWindowDrawList()->AddText(ImGui::GetFont(), ImGui::GetFontSize(), ImVec2(x, y), ImGui::GetColorU32(ImGuiCol_Text), label);
+		} else {
+			result = ImGui::Button(label, size);
+		}
 		ImGui::PopStyleColor(3);
 		return result;
 	}
@@ -89,49 +109,145 @@ namespace UI {
 			drawList->AddCircleFilled(center, 5.0f, IM_COL32(255, 65, 70, 255));
 		}
 	}
-	static void DrawBellIcon(ImDrawList* drawList, ImVec2 center, ImU32 color, float scale = 1.0f) {
-		const float w = 13.0f* scale;
-		const float h = 15.0f* scale;
-		ImVec2 top(center.x, center.y - h* 0.45f);
-		ImVec2 left(center.x - w* 0.50f, center.y + h* 0.25f);
-		ImVec2 right(center.x + w* 0.50f, center.y + h* 0.25f);
+	static void DrawVibrationIcon(ImDrawList* drawList, ImVec2 center, ImU32 color, float scale = 1.0f) {
+		const float width = 18.0f * scale;
+		const float height = 14.0f * scale;
+		const float left = center.x - width * 0.5f;
+		const float right = center.x + width * 0.5f;
+		const float top = center.y - height * 0.5f;
+		const float bottom = center.y + height * 0.5f;
 		drawList->PathClear();
-		drawList->PathLineTo(top);
-		drawList->PathBezierCubicCurveTo(ImVec2(center.x - w* 0.45f, center.y - h* 0.20f), ImVec2(center.x - w* 0.50f, center.y + h* 0.05f), left);
-		drawList->PathLineTo(right);
-		drawList->PathBezierCubicCurveTo(ImVec2(center.x + w* 0.50f, center.y + h* 0.05f), ImVec2(center.x + w* 0.45f, center.y - h* 0.20f), top);
-		drawList->PathFillConvex(color);
-		drawList->AddRectFilled(ImVec2(center.x - w* 0.62f, center.y + h* 0.27f), ImVec2(center.x + w* 0.62f, center.y + h* 0.38f), color, 3.0f);
-		drawList->AddCircleFilled(ImVec2(center.x, center.y + h* 0.48f), 2.0f* scale, color);
+		// Left vibration wave
+		drawList->PathLineTo(ImVec2(left, center.y));
+		drawList->PathLineTo(ImVec2(left + width * 0.12f, top));
+		drawList->PathLineTo(ImVec2(left + width * 0.24f, bottom));
+		// Main wave
+		drawList->PathLineTo(ImVec2(center.x - width * 0.12f, top));
+		drawList->PathLineTo(ImVec2(center.x, bottom));
+		drawList->PathLineTo(ImVec2(center.x + width * 0.12f, top));
+		drawList->PathLineTo(ImVec2(center.x + width * 0.24f, bottom));
+		// Right vibration wave
+		drawList->PathLineTo(ImVec2(right, center.y));
+		drawList->PathStroke(color, false, 2.0f * scale);
 	}
-	bool BellButton(const char* id, bool enabled, bool pending) {
+	bool VibrationButton(const char* id, bool active, bool pending, ImVec2& popupPos) {
 		ImGui::PushID(id);
-		constexpr float size = 40.0f;
+		constexpr float buttonSize = 40.0f;
+		constexpr float arrowWidth = 22.0f;
+		constexpr float spacing = 2.0f;
 		ImVec2 pos = ImGui::GetCursorScreenPos();
-		bool clicked = ImGui::InvisibleButton("##bell", ImVec2(size, size));
-		bool hovered = ImGui::IsItemHovered();
-		if(!enabled || pending) clicked = false;
+		popupPos = ImVec2(pos.x, pos.y + buttonSize + 4.0f);
+		//================================================
+		// Vibration button
+		//================================================
+		bool vibrationClicked = ImGui::InvisibleButton("##vibration", ImVec2(buttonSize, buttonSize));
+		bool vibrationHovered = ImGui::IsItemHovered();
+		if (pending) vibrationClicked = false;
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		ImVec2 center(pos.x + size* 0.5f, pos.y + size* 0.5f);
 		ImVec4 bg;
-		if(!enabled || pending) {
+		if (pending) {
 			bg = ImVec4(0.05f, 0.055f, 0.065f, 1.0f);
 		} else {
-			bg = hovered ? ImVec4(0.10f, 0.16f, 0.25f, 1.0f) : ImVec4(0.07f, 0.10f, 0.16f, 1.0f);
+			bg = vibrationHovered ? ImVec4(0.10f, 0.16f, 0.25f, 1.0f) : ImVec4(0.07f, 0.10f, 0.16f, 1.0f);
 		}
-		drawList->AddRectFilled(pos, ImVec2(pos.x + size, pos.y + size), ImGui::ColorConvertFloat4ToU32(bg), 10.0f);
-		if(pending) {
-			DrawBellIcon(drawList, center, IM_COL32(120, 130, 145, 100));
-		} else if(enabled) {
-			ImU32 iconColor = hovered ? IM_COL32(100, 175, 255, 255) : IM_COL32(120, 155, 205, 255);
-			DrawBellIcon(drawList, center, iconColor);
+		drawList->AddRectFilled(pos, ImVec2(pos.x + buttonSize, pos.y + buttonSize), ImGui::ColorConvertFloat4ToU32(bg), 10.0f);
+		ImVec2 center(pos.x + buttonSize * 0.5f, pos.y + buttonSize * 0.5f);
+		if (pending) {
+			DrawVibrationIcon(drawList, center, IM_COL32(120, 130, 145, 100));
 		} else {
-			DrawBellIcon(drawList, center, IM_COL32(90, 95, 105, 130));
+			ImU32 iconColor = vibrationHovered ? IM_COL32(100, 175, 255, 255) : IM_COL32(120, 155, 205, 255);
+			DrawVibrationIcon(drawList, center, iconColor);
 		}
+		//================================================
+		// Dropdown button
+		//================================================
+		ImGui::SameLine(0.0f, spacing);
+		ImVec2 arrowPos = ImGui::GetCursorScreenPos();
+		bool arrowClicked = ImGui::InvisibleButton("##vibration_dropdown", ImVec2(arrowWidth, buttonSize));
+		bool arrowHovered = ImGui::IsItemHovered();
+		if (arrowClicked && active) {
+			ImGui::OpenPopup("##VibrationDropdown");
+		}
+		//================================================
+		// Arrow background
+		//================================================
+		ImVec4 arrowBg;
+		if (!active) {
+			arrowBg = ImVec4(0.05f, 0.055f, 0.065f, 1.0f);
+		} else if (arrowHovered) {
+			arrowBg = ImVec4(0.10f, 0.16f, 0.25f, 1.0f);
+		} else {
+			arrowBg = ImVec4(0.07f, 0.10f, 0.16f, 1.0f);
+		}
+		drawList->AddRectFilled(arrowPos, ImVec2(arrowPos.x + arrowWidth, arrowPos.y + buttonSize), ImGui::ColorConvertFloat4ToU32(arrowBg), 10.0f);
+		//================================================
+		// Separator
+		//================================================
+		drawList->AddLine(ImVec2(arrowPos.x, arrowPos.y + 9.0f), ImVec2(arrowPos.x, arrowPos.y + buttonSize - 9.0f), IM_COL32(55, 65, 80, 180), 1.0f);
+		//================================================
+		// Chevron
+		//================================================
+		ImVec2 arrowCenter(arrowPos.x + arrowWidth * 0.5f, arrowPos.y + buttonSize * 0.5f);
+		ImU32 arrowColor = active ? IM_COL32(130, 155, 190, 255) : IM_COL32(90, 95, 105, 100);
+		constexpr float arrowSize = 4.0f;
+		drawList->AddLine(ImVec2(arrowCenter.x - arrowSize, arrowCenter.y - 2.0f), ImVec2(arrowCenter.x, arrowCenter.y + 2.0f), arrowColor, 1.5f);
+		drawList->AddLine(ImVec2(arrowCenter.x, arrowCenter.y + 2.0f), ImVec2(arrowCenter.x + arrowSize, arrowCenter.y - 2.0f), arrowColor, 1.5f);
 		ImGui::PopID();
-		return clicked;
+		return vibrationClicked;
 	}
-
+	bool RenderVibrationDropdown(const char* id, bool& rumble, const ImVec2& popupPos) {
+		ImGui::PushID(id);
+		ImGui::SetNextWindowPos(popupPos, ImGuiCond_Appearing);
+		ImGui::SetNextWindowSize(ImVec2(310.0f, 92.0f));
+		ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.045f, 0.055f, 0.075f, 0.98f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.12f, 0.18f, 0.28f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 12.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_PopupBorderSize, 1.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0f, 14.0f));
+		bool toggleClicked = false;
+		if (ImGui::BeginPopup("##VibrationDropdown")) {
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			ImVec2 windowPos = ImGui::GetWindowPos();
+			//================================================
+			// Icon
+			//================================================
+			DrawVibrationIcon(drawList, ImVec2(windowPos.x + 20.0f, windowPos.y + 22.0f), IM_COL32(100, 175, 255, 255), 0.85f);
+			//================================================
+			// Title
+			//================================================
+			ImGui::SetCursorPos(ImVec2(42.0f, 12.0f));
+			ImGui::TextColored(ImVec4(0.88f, 0.91f, 0.97f, 1.0f), "Vibration / Rumble");
+			//================================================
+			// Toggle
+			//================================================
+			constexpr float toggleWidth = 38.0f;
+			constexpr float toggleHeight = 20.0f;
+			ImVec2 togglePos(windowPos.x + 310.0f - toggleWidth - 16.0f, windowPos.y + 14.0f);
+			ImGui::SetCursorScreenPos(togglePos);
+			toggleClicked = ImGui::InvisibleButton("##toggle", ImVec2(toggleWidth, toggleHeight));
+			bool hovered = ImGui::IsItemHovered();
+			ImVec4 toggleBg = rumble ? ImVec4(0.15f, 0.48f, 0.95f, 1.0f) : ImVec4(0.16f, 0.18f, 0.22f, 1.0f);
+			if (hovered) {
+				toggleBg.x += 0.03f;
+				toggleBg.y += 0.03f;
+				toggleBg.z += 0.03f;
+			}
+			drawList->AddRectFilled(togglePos, ImVec2(togglePos.x + toggleWidth, togglePos.y + toggleHeight), ImGui::ColorConvertFloat4ToU32(toggleBg), toggleHeight * 0.5f);
+			constexpr float knobSize = 16.0f;
+			float knobX = rumble ? togglePos.x + toggleWidth - knobSize - 2.0f : togglePos.x + 2.0f;
+			drawList->AddCircleFilled(ImVec2(knobX + knobSize * 0.5f, togglePos.y + toggleHeight * 0.5f), knobSize * 0.5f, IM_COL32(245, 248, 255, 255));
+			//================================================
+			// Description
+			//================================================
+			ImGui::SetCursorPos(ImVec2(42.0f, 39.0f));
+			ImGui::TextColored(ImVec4(0.42f, 0.47f, 0.57f, 1.0f), "Enable vibration for this device.");
+			ImGui::EndPopup();
+		}
+		ImGui::PopStyleVar(3);
+		ImGui::PopStyleColor(2);
+		ImGui::PopID();
+		return toggleClicked;
+	}
 	void DrawRefreshIcon(ImDrawList* drawList, ImVec2 center, ImU32 color, float radius, float rotation) {
 		const float thickness = 2.0f;
 		auto RotatePoint = [&](ImVec2 p) -> ImVec2 {
@@ -140,10 +256,10 @@ namespace UI {
 			float x = p.x - center.x;
 			float y = p.y - center.y;
 			return ImVec2(center.x + x * c - y * s, center.y + x * s + y * c);
-			};
+		};
 		drawList->PathClear();
 		drawList->PathArcTo(center, radius, -0.75f + rotation, 4.8f + rotation, 24);
-		drawList->PathStroke(color, 0, thickness);
+		drawList->PathStroke(color, thickness);
 		ImVec2 arrowTip(center.x + radius * 0.82f, center.y - radius * 0.56f);
 		ImVec2 arrowA(arrowTip.x - 5.0f, arrowTip.y - 1.0f);
 		ImVec2 arrowB(arrowTip.x - 1.0f, arrowTip.y + 4.0f);
@@ -184,8 +300,28 @@ namespace UI {
 		}
 		DrawRefreshIcon(drawList, center, color, 7.0f, rotation);
 		if (hovered && !pending) {
-			drawList->AddRect(pos, ImVec2(pos.x + size, pos.y + size), IM_COL32(70, 130, 220, 100), 9.0f, 0, 1.0f);
+			drawList->AddRect(pos, ImVec2(pos.x + size, pos.y + size), IM_COL32(70, 130, 220, 100), 9.0f, 1.0f);
 		}
+		ImGui::PopID();
+		return clicked;
+	}
+	bool ModernCheckbox(const char* label, bool* value) {
+		ImGui::PushID(label);
+		ImVec2 pos = ImGui::GetCursorScreenPos();
+		float size = 18.0f;
+		bool clicked = ImGui::InvisibleButton("##Checkbox", ImVec2(size, size));
+		if (clicked)*value = !*value;
+		ImDrawList* draw = ImGui::GetWindowDrawList();
+		ImU32 bgColor = *value ? IM_COL32(70, 180, 110, 255) : IM_COL32(35, 40, 52, 255);
+		ImU32 borderColor = *value ? IM_COL32(90, 210, 130, 255) : IM_COL32(75, 82, 98, 255);
+		draw->AddRectFilled(pos, ImVec2(pos.x + size, pos.y + size), bgColor, 5.0f);
+		draw->AddRect(pos, ImVec2(pos.x + size, pos.y + size), borderColor, 5.0f, 1.2f);
+		if (*value) {
+			draw->AddLine(ImVec2(pos.x + 4.0f, pos.y + 9.0f), ImVec2(pos.x + 8.0f, pos.y + 13.0f), IM_COL32(255, 255, 255, 255), 2.0f);
+			draw->AddLine(ImVec2(pos.x + 8.0f, pos.y + 13.0f), ImVec2(pos.x + 15.0f, pos.y + 5.0f), IM_COL32(255, 255, 255, 255), 2.0f);
+		}
+		ImGui::SameLine(0.0f, 10.0f);
+		ImGui::TextUnformatted(label);
 		ImGui::PopID();
 		return clicked;
 	}

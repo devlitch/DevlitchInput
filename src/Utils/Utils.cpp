@@ -1,9 +1,13 @@
 #include "Utils.h"
 
+#include "../GUI/GUI.h"
+#include "SingleInstance.h"
+
 #include <chrono>
 #include <windows.h>
 #include <tlhelp32.h>
 #include <algorithm>
+#include <shellapi.h>
 
 std::string GetProgramFolder() {
     char buffer[MAX_PATH];
@@ -76,6 +80,26 @@ bool TerminateSteam() {
 
     CloseHandle(snapshot);
     return terminated;
+}
+
+void RestartApp() {
+    SingleInstance singleInstance;
+    singleInstance.Release();
+    gui.ShowWindow(0);
+
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(nullptr, exePath, MAX_PATH);
+
+    ShellExecuteA(
+        nullptr,
+        "open",
+        exePath,
+        nullptr,
+        nullptr,
+        SW_SHOWNORMAL
+    );
+
+    std::exit(0);
 }
 
 std::string GetCurrentTimeMs() {

@@ -12,6 +12,7 @@
 #include "Notification.h"
 
 #include "../DI/nput.h"
+#include "../Tray/Tray.h"
 
 bool GUI::Init() {
     guiThread = std::thread(&GUI::Run, this);
@@ -139,7 +140,34 @@ void GUI::Run() {
         return;
     }
     SDL_Window* currentWindow = SDL_CreateWindow("DevlitchInput", 1200, 720, 0);
-    AttachWindow(currentWindow);
+    if (!currentWindow) {
+        ShowError(std::string("Window creation failed: \n") + SDL_GetError());
+        return;
+    }
+    if (!AttachWindow(currentWindow)) {
+        ShowError("Failed attaching SDL window");
+        return;
+    }
+    HWND hwnd = static_cast <HWND>(SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr));
+    if (!hwnd) {
+        ShowError("Failed getting Win32 HWND from SDL3");
+        return;
+    }
+    // =========================================================
+    // Tray callbacks
+    // =========================================================
+    tray.SetOnShow([this]() {
+        restoringFromTray = true;
+        ShowWindow();
+        RaiseWindow();
+    });
+    tray.SetOnExit([this]() {
+        Stop();
+    });
+    if (!tray.Create(hwnd)) {
+        ShowError("Failed creating system tray");
+        return;
+    }
     ui.init();
     while (alive.load()) {
         Wait(true);
@@ -159,9 +187,27 @@ void GUI::Run() {
         }
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_EVENT_QUIT) {
+            if (e.type == SDL_EVENT_QUIT || e.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
+                if (e.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && (SDL_GetModState() & SDL_KMOD_ALT)) { // ALT + F4
+                    Stop();
+                    break;
+                }
+                if (options.closeToTray) {
+                    MinimizeToTray();
+                    continue;
+                }
                 Stop();
                 break;
+            }
+            if (e.type == SDL_EVENT_WINDOW_MINIMIZED) {
+                if (options.minimizeToTray) {
+                    if (restoringFromTray) {
+                        restoringFromTray = false;
+                    } else {
+                        MinimizeToTray();
+                    }
+                    continue;
+                }
             }
             if (!isRunning()) continue;
             if (!alive.load()) break;
@@ -246,15 +292,11 @@ SDL_HitTestResult SDLCALL GUI::HitTest(SDL_Window* window, const SDL_Point* pt, 
     if (pt->x > w - buttonSize - padding &&
         pt->x < w - padding &&
         pt->y > padding &&
-        pt->y < buttonSize + padding)
-    {
+        pt->y < buttonSize + padding) {
         return SDL_HITTEST_NORMAL;
     }
 
-    if (pt->y < 30)
-    {
-        return SDL_HITTEST_DRAGGABLE;
-    }
+    if (pt->y < 30) return SDL_HITTEST_DRAGGABLE;
 
     return SDL_HITTEST_NORMAL;
 }
@@ -301,7 +343,7 @@ void GUI::BringWindowToFront() {
     });
 }
 
-void GUI::ShowError(std::string text) {
+void GUI::ShowError(const std::string& text) {
     SDL_Delay(250);
     SDL_ShowSimpleMessageBox(
         SDL_MESSAGEBOX_ERROR,
@@ -311,7 +353,23 @@ void GUI::ShowError(std::string text) {
     );
 }
 
+void GUI::MinimizeToTray() {
+    RunOnThreadSafe([this] {
+        if (!window) return;
+        SDL_HideWindow(window);
+    });
+}
+
+void GUI::SetMinimizeToTray(bool enabled) {
+    options.minimizeToTray = enabled;
+}
+
+void GUI::SetCloseToTray(bool enabled) {
+    options.closeToTray = enabled;
+}
+
 void GUI::Shutdown() {
+    tray.Destroy();
     ImGui_ImplSDLGPU3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();

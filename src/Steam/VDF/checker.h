@@ -10,6 +10,6 @@ class Checker {
 public:
     bool init();
 private:
-    uint32_t findAppID(std::string target, std::vector<Shortcut> shortcuts);
+    uint32_t findAppID(const std::string& target, const std::vector<Shortcut>& shortcuts);
     uint64_t AppIDToRunGameID(uint32_t appid);
 };

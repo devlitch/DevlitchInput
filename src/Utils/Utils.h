@@ -15,4 +15,6 @@ bool IsExeRunning(const std::wstring& exePath);
 
 bool TerminateSteam();
 
+void RestartApp();
+
 std::string GetCurrentTimeMs();
