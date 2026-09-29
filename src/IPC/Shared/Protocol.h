@@ -12,6 +12,8 @@ namespace IPC {
         ListControllers = 1,
         Connect,
         Disconnect,
+        SetRumble,
+        GetRumbleState,
         TestRumble,
 
         Success = 100,
@@ -21,6 +23,8 @@ namespace IPC {
         ControllerConnected = 200,
         ControllerDisconnected,
         ControllerPinged,
+        ControllerSetRumble,
+        ControllerRumbleState,
         InputState
     };
 
@@ -36,6 +40,8 @@ namespace IPC {
         SDLInit,
         Ping,
         Connect,
+        SwitchRumble,
+        RumbleState,
 
         Unknown = 255
     };
@@ -59,6 +65,11 @@ namespace IPC {
         uint32_t controllerId;
     };
 
+    struct SwitchRumblePayload {
+        uint32_t controllerId;
+        bool enabled;
+    };
+
     struct TestRumblePayload {
         uint32_t controllerId;
 
@@ -73,7 +84,6 @@ namespace IPC {
     //==================================================
 
     struct SuccessPayload {
-        //uint8_t success;
         SuccessType type;
     };
 
@@ -85,6 +95,7 @@ namespace IPC {
     struct ControllerInfo {
         uint32_t id;
         uint8_t connected;
+        bool rumble;
         char name[128];
     };
 

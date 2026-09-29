@@ -85,6 +85,26 @@ void ViGEmManager::RemoveController(SDL_JoystickID id) {
     pads.erase(it);
 }
 
+bool ViGEmManager::EnableRumble(SDL_JoystickID id) {
+    auto it = pads.find(id);
+    if (it == pads.end()) return false;
+    VirtualPad* pad = it->second.get();
+    if (pad->rumble) return true;
+    VIGEM_ERROR err = vigem_target_x360_register_notification(client, pad->target, RumbleCallback, pad);
+    pad->rumble = VIGEM_SUCCESS(err);
+    return pad->rumble;
+}
+
+bool ViGEmManager::DisableRumble(SDL_JoystickID id) {
+    auto it = pads.find(id);
+    if (it == pads.end()) return false;
+    VirtualPad* pad = it->second.get();
+    if (!pad->rumble) return true;
+    vigem_target_x360_unregister_notification(pad->target);
+    pad->rumble = false;
+    return true;
+}
+
 bool ViGEmManager::isOurDevice(USHORT vid, USHORT pid) const {
     return vid == MY_VID && pid == MY_PID;
 }

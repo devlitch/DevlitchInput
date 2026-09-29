@@ -38,7 +38,7 @@ private:
     std::filesystem::path GetTempDir();
     bool CreateAcceptor();
     bool WaitForClient();
-    bool checkMsg(std::string msg);
+    bool checkMsg(const std::string& msg);
 private:
     asio::io_context m_ioContext;
     asio::ip::tcp::acceptor m_acceptor;

@@ -22,6 +22,21 @@ bool ControllerManager::Rumble(SDL_JoystickID id, Uint16 smallMotor, Uint16 larg
     return gamepadManager.TestRumble(id, smallMotor, largeMotor, duration);
 }
 
+int ControllerManager::GetRumbleState(SDL_JoystickID id) {
+    Controller* cGamepad = gamepadManager.find(id);
+    if (!cGamepad) return 2;
+    return cGamepad->rumble;
+}
+
+bool ControllerManager::SwitchRumble(SDL_JoystickID id, bool enabled) {
+    Controller* cGamepad = gamepadManager.find(id);
+    if (!cGamepad) return false;
+    bool result = enabled ? bridge.EnableRumble(id) : bridge.DisableRumble(id);
+    if (!result) return false;
+    cGamepad->rumble = enabled;
+    return result;
+}
+
 void ControllerManager::Refresh() {
     controllersInfo.clear();
 
@@ -41,6 +56,7 @@ void ControllerManager::Refresh() {
         c.id = id;
         c.name = std::string(SDL_GetJoystickNameForID(id)) + " ( #" + std::to_string(id) + " )";
         c.connected = cGamepad ? true : false;
+        c.rumble = cGamepad ? cGamepad->rumble : false;
 
         if (bridge.isOurDevice(vid, pid)) continue;
 

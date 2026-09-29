@@ -24,6 +24,8 @@ private:
 private:
 	void HandleControllerList();
 	void HandleControllerState(uint32_t controllerId, bool type);
+	void HandleControllerGetRumbleState(IPC::ControllerPayload payload);
+	void HandleControllerSwitchRumble(IPC::SwitchRumblePayload payload);
 	void HandleControllerRumble(IPC::TestRumblePayload payload);
 };
 

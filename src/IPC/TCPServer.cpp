@@ -27,6 +27,18 @@ bool TcpServer::init() {
             HandleControllerState(payload.controllerId, header.type == IPC::PacketType::Connect ? true : false);
             break;
         }
+        case IPC::PacketType::SetRumble: {
+            IPC::SwitchRumblePayload payload{};
+            if (!server.func.ReceivePayload(payload, header.payloadSize)) break;
+            HandleControllerSwitchRumble(payload);
+            break;
+        }
+        case IPC::PacketType::GetRumbleState: {
+            IPC::ControllerPayload payload{};
+            if (!server.func.ReceivePayload(payload, header.payloadSize)) break;
+            HandleControllerGetRumbleState(payload);
+            break;
+        }
         case IPC::PacketType::TestRumble: {
             IPC::TestRumblePayload payload{};
             if (!server.func.ReceivePayload(payload, header.payloadSize)) break;
@@ -53,6 +65,7 @@ void TcpServer::HandleControllerList() {
     for (size_t i = 0; i < count; i++) {
         const auto& controller = controllerList[i];
         response.controllers[i].id = static_cast<int64_t>(controller.id);
+        response.controllers[i].rumble = controller.rumble ? 1 : 0;
         response.controllers[i].connected = controller.connected ? 1 : 0;
         setString(response.controllers[i].name, controller.name);
     }
@@ -68,6 +81,35 @@ void TcpServer::HandleControllerState(uint32_t controllerId, bool type) {
         IPC::ErrorPayload response{};
         response.type = IPC::ErrorType::Connect;
         response.errorCode = (type ? 100 : 0) + controllerId;
+        server.func.Send(IPC::PacketType::Error, response);
+    }
+}
+
+void TcpServer::HandleControllerGetRumbleState(IPC::ControllerPayload payload) {
+    int result = controllerManager.GetRumbleState(payload.controllerId);
+    if (result != 2) {
+        IPC::SwitchRumblePayload response{};
+        response.controllerId = payload.controllerId;
+        response.enabled = result;
+        server.func.Send(IPC::PacketType::ControllerRumbleState, response);
+    } else {
+        IPC::ErrorPayload response{};
+        response.type = IPC::ErrorType::RumbleState;
+        response.errorCode = payload.controllerId;
+        server.func.Send(IPC::PacketType::Error, response);
+    }
+}
+
+void TcpServer::HandleControllerSwitchRumble(IPC::SwitchRumblePayload payload) {
+    if (controllerManager.SwitchRumble(payload.controllerId, payload.enabled)) {
+        IPC::SwitchRumblePayload response{};
+        response.controllerId = payload.controllerId;
+        response.enabled = payload.enabled;
+        server.func.Send(IPC::PacketType::ControllerSetRumble, response);
+    } else {
+        IPC::ErrorPayload response{};
+        response.type = IPC::ErrorType::SwitchRumble;
+        response.errorCode = payload.controllerId;
         server.func.Send(IPC::PacketType::Error, response);
     }
 }

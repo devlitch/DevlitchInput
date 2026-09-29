@@ -4,6 +4,7 @@
 #include "../Input/ControllerManager.h"
 #include "../Bridge/ViGEmManager.h"
 
+#include <thread>
 #include <format>
 
 bool GamepadManager::Initialize() {

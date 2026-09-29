@@ -33,6 +33,9 @@ public:
     void RemoveController(SDL_JoystickID id);
     bool isOurDevice(USHORT vid, USHORT pid) const;
 
+    bool EnableRumble(SDL_JoystickID id);
+    bool DisableRumble(SDL_JoystickID id);
+
     void Update(SDL_JoystickID id, const InputState& state);
 
 private:
